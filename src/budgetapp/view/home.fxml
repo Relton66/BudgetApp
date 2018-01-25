@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="660.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="budgetapp.controller.HomeController">
+   <left>
+      <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <children>
+            <ChoiceBox fx:id="budgetList" layoutX="14.0" layoutY="38.0" prefWidth="150.0" />
+            <Pane layoutX="13.0" layoutY="178.0" prefHeight="455.0" prefWidth="174.0">
+               <children>
+                  <TextField fx:id="amountField" layoutX="1.0" layoutY="19.0" />
+                  <CheckBox fx:id="incomeCheckBoxField" layoutX="1.0" layoutY="44.0" mnemonicParsing="false" text="Income?" />
+                  <DatePicker fx:id="transDateField" layoutY="94.0" />
+                  <ChoiceBox fx:id="existingVendorList" layoutX="1.0" layoutY="150.0" prefWidth="150.0" />
+                  <TextField fx:id="newVendorField" layoutX="1.0" layoutY="221.0" />
+                  <Button fx:id="submitBtn" layoutX="31.0" layoutY="378.0" mnemonicParsing="false" onAction="#onSubmitAction" styleClass="#green" text="Submit" />
+                  <Button fx:id="resetBtn" layoutX="95.0" layoutY="378.0" mnemonicParsing="false" onAction="#onResetAction" text="Reset" />
+                  <Label layoutX="2.0" text="Amount:" />
+                  <Label layoutX="2.0" layoutY="133.0" text="Select Existing Vendor:" />
+                  <Label layoutX="62.0" layoutY="178.0" text="OR" />
+                  <Label layoutX="2.0" layoutY="204.0" text="Enter New Vendor:" />
+                  <Label layoutX="2.0" layoutY="252.0" text="Select Category:" />
+                  <Label layoutX="2.0" layoutY="77.0" text="Transaction Date:" />
+                  <Label fx:id="statusMessage" layoutY="407.0" prefHeight="38.0" prefWidth="168.0" wrapText="true" />
+                  <ChoiceBox fx:id="categoryList" layoutX="1.0" layoutY="269.0" prefWidth="150.0" />
+                  <Label layoutY="319.0" text="Transaction Method (Optional)" />
+                  <ChoiceBox fx:id="methodList" layoutY="336.0" prefWidth="150.0" />
+                  <Separator layoutX="157.0" layoutY="199.0" orientation="VERTICAL" prefHeight="108.0" prefWidth="6.0" />
+                  <Separator layoutX="-5.0" layoutY="198.0" prefHeight="4.0" prefWidth="163.0" />
+                  <Separator layoutX="-4.0" layoutY="306.0" prefHeight="4.0" prefWidth="163.0" />
+               </children>
+            </Pane>
+            <Separator layoutY="138.0" prefWidth="200.0" />
+            <Label layoutX="13.0" layoutY="148.0" text="Enter Transaction">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <Label layoutX="13.0" layoutY="6.0" text="Select Budget">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <Label layoutX="14.0" layoutY="97.0" text="Starting Balance:" />
+            <Label layoutX="14.0" layoutY="114.0" text="Current Balance:" />
+            <Label fx:id="startingBalanceLabel" layoutX="109.0" layoutY="97.0" text="\$0.00" />
+            <Label fx:id="currentBalanceLabel" layoutX="109.0" layoutY="114.0" text="\$0.00" />
+            <Separator layoutX="7.0" layoutY="378.0" orientation="VERTICAL" prefHeight="108.0" prefWidth="6.0" />
+            <CheckBox fx:id="activeBudgetCheckBox" layoutX="13.0" layoutY="70.0" mnemonicParsing="false" onAction="#onBudgetActiveAction" text="Set as Active Budget" />
+         </children>
+      </AnchorPane>
+   </left>
+   <top>
+      <MenuBar fx:id="menuBar" BorderPane.alignment="CENTER">
+        <menus>
+          <Menu mnemonicParsing="false" text="File">
+            <items>
+              <MenuItem fx:id="saveToFileMenuItem" mnemonicParsing="false" onAction="#onSaveToFileAction" text="Save to File" />
+                  <MenuItem fx:id="exitMenuItem" mnemonicParsing="false" onAction="#onExitMenuItem" text="Exit" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Budgets">
+            <items>
+              <MenuItem fx:id="addNewBudgetMenu" mnemonicParsing="false" onAction="#onAddNewBudget" text="Add New Budget" />
+            </items>
+          </Menu>
+            <Menu mnemonicParsing="false" text="Method Types">
+               <items>
+                  <MenuItem fx:id="manageMethodMenu" mnemonicParsing="false" onAction="#onManageMethodAction" text="Manage Method Types" />
+               </items>
+            </Menu>
+          <Menu mnemonicParsing="false" text="View">
+            <items>
+              <MenuItem fx:id="viewReportsMenuItem" mnemonicParsing="false" onAction="#onViewReportsAction" text="View Reports" />
+            </items>
+          </Menu>
+            <Menu mnemonicParsing="false" text="Help">
+               <items>
+                  <MenuItem fx:id="aboutMenuItem" mnemonicParsing="false" onAction="#onAboutMenu" text="About" />
+               </items>
+            </Menu>
+        </menus>
+      </MenuBar>
+   </top>
+   <center>
+      <TabPane fx:id="categoryTabPane" prefHeight="200.0" prefWidth="716.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER" />
+   </center>
+   <right>
+      <TableView fx:id="categoryBudgetTable" prefHeight="635.0" prefWidth="297.0" BorderPane.alignment="CENTER">
+         <columns>
+            <TableColumn fx:id="categoryColumn" prefWidth="75.0" text="Category Name" />
+            <TableColumn fx:id="budgetAmountColumn" editable="false" prefWidth="75.0" text="Budget">
+               <columns>
+                  <TableColumn fx:id="budgetRemainingCol" prefWidth="75.0" text="Remaining" />
+                  <TableColumn fx:id="budgetStartingCol" prefWidth="75.0" text="Starting" />
+               </columns></TableColumn>
+         </columns>
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy></TableView>
+   </right>
+</BorderPane>
