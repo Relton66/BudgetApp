@@ -88,7 +88,7 @@
             </Menu>
           <Menu mnemonicParsing="false" text="View">
             <items>
-              <MenuItem fx:id="viewReportsMenuItem" mnemonicParsing="false" onAction="#onViewReportsAction" text="View Reports" />
+              <MenuItem fx:id="viewReportsMenuItem" mnemonicParsing="false" onAction="#onViewReportsAction" text="Reports" />
             </items>
           </Menu>
             <Menu mnemonicParsing="false" text="Help">

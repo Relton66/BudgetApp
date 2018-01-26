@@ -694,7 +694,8 @@ public class HomeController implements Initializable {
     }
     
     /**
-     * This method handles the manage method type menu item.     
+     * This method handles the manage method type menu item.   
+     * 
      * @throws IOException - the IO exception
      */
     @FXML
@@ -739,14 +740,23 @@ public class HomeController implements Initializable {
     
     /**
      * This method handles the view reports menu item.
+     * 
+     * @throws IOException - the IO exception
      */
     @FXML
-    public void onViewReportsAction() {
-        Alert alert = new Alert(AlertType.INFORMATION);
-        alert.setTitle("Coming Soon!");
-        alert.setHeaderText(null);
-        alert.setContentText("This feature is not implemented yet.");
-        alert.showAndWait();
+    public void onViewReportsAction() throws IOException {
+        Stage stage = new Stage();
+        stage.setTitle("Reports");
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(Main.class.getResource("view/reports.fxml"));
+        BorderPane border = (BorderPane) loader.load();
+        ReportController rController = loader.getController();
+        rController.setHomeContoller(this);
+        rController.setBudgetId(selectedBudgetId);
+        Scene scene = new Scene(border);
+        stage.setScene(scene);
+        stage.setAlwaysOnTop(true);
+        stage.show();
     }
     
     /**

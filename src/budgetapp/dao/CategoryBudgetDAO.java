@@ -54,8 +54,9 @@ public class CategoryBudgetDAO {
     public static List<CategoryBudgetTableEntry> getCategoryBudgetsForTable(int budgetId) {
         LOG.info("Attempting to get category budgets for budget ID {}", budgetId);
         List<CategoryBudgetTableEntry> categoryBudgetList = new ArrayList<>();
-        String query = "SELECT cat.category_name, catbud.current_balance, catbud.start_balance FROM category_budget catbud JOIN category cat on catbud.category_id = cat.category_id"
-                + " where catbud.budget_id = ? ORDER BY cat.category_name";
+        String query = "SELECT cat.category_name, catbud.current_balance, catbud.start_balance FROM category_budget"
+                + " catbud JOIN category cat ON catbud.category_id = cat.category_id WHERE catbud.budget_id = ?"
+                + " ORDER BY cat.category_name";
         List<Object> parameters = new ArrayList<>();
         parameters.add(budgetId);
         try {
@@ -124,5 +125,33 @@ public class CategoryBudgetDAO {
         } catch (SQLException | ClassNotFoundException e) {
             LOG.error("rollbackBalance has failed", e);           
         }        
+    }
+    
+    /**
+     * This method will retrieve all data for the category report.
+     * 
+     * @param budgetId - the budget ID
+     * @return the list of category budgets for category report     
+     */
+    public static List<CategoryBudgetTableEntry> getDataForCategoryReport(int budgetId) {
+        LOG.info("Attempting to get data for category report for budget ID {}", budgetId);
+        List<CategoryBudgetTableEntry> categoryDataList = new ArrayList<>();
+        String query = "SELECT cat.category_name, (catbud.start_balance - catbud.current_balance) AS amount_spent "
+                + "FROM category_budget catbud JOIN category cat ON catbud.category_id = cat.category_id WHERE"
+                + " catbud.budget_id = ? ORDER BY cat.category_name";
+        List<Object> parameters = new ArrayList<>();
+        parameters.add(budgetId);
+        try {
+           ResultSet results = DBUtil.dbExecuteSelectQuery(query, parameters);
+           while(results.next()) {
+               CategoryBudgetTableEntry categoryBudgetTable = new CategoryBudgetTableEntry(results.getString("CATEGORY_NAME"), 
+                        results.getString("AMOUNT_SPENT"), results.getString("AMOUNT_SPENT"));
+               categoryDataList.add(categoryBudgetTable);
+           }
+        } catch (SQLException | ClassNotFoundException e) {
+            LOG.error("getDataForCategoryReport has failed", e);           
+        }
+        LOG.info("Category data retrieved successfully!");
+        return categoryDataList;
     }
 }
