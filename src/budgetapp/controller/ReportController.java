@@ -10,6 +10,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Side;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
@@ -112,7 +113,10 @@ public class ReportController implements Initializable {
             pieChartData.add(new PieChart.Data(categoryBudget.getCategoryName(), Double.parseDouble(
                     categoryBudget.getBudgetRemaining())));
         }
-        pieChartField.setData(pieChartData);           
+        pieChartField.setData(pieChartData);
+        pieChartField.setLabelLineLength(50);
+        pieChartField.setLegendSide(Side.TOP);
+        pieChartField.setTitle("Spending Per Category");
     }
     
     /**
