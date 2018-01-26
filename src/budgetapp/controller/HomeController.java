@@ -45,6 +45,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
@@ -463,8 +464,26 @@ public class HomeController implements Initializable {
         categoryColumn.setCellValueFactory(new PropertyValueFactory("categoryName"));
         categoryColumn.setCellFactory(TextFieldTableCell.<CategoryBudgetTableEntry>forTableColumn());        
         budgetRemainingCol.setCellValueFactory(new PropertyValueFactory("budgetRemaining"));
-        budgetRemainingCol.setCellFactory(TextFieldTableCell.<CategoryBudgetTableEntry>forTableColumn());
-        budgetRemainingCol.setStyle("-fx-alignment: CENTER-RIGHT;");
+        budgetRemainingCol.setStyle("-fx-alignment: CENTER-RIGHT;");        
+        budgetRemainingCol.setCellFactory(new Callback<TableColumn, TableCell>() {
+            public TableCell call(TableColumn param) {
+                return new TableCell<CategoryBudgetTableEntry, String>() {
+                    @Override
+                    public void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (!isEmpty()) {
+                            if(item.contains("-")) {
+                                this.setTextFill(Color.RED);
+                            } else {
+                                this.setTextFill(Color.GREEN);
+                            }
+                            setText(item);
+                        }
+                    }
+                };
+            }
+        });
+        
         budgetStartingCol.setCellValueFactory(new PropertyValueFactory("budgetStarting"));
         budgetStartingCol.setCellFactory(TextFieldTableCell.<CategoryBudgetTableEntry>forTableColumn());
         budgetStartingCol.setStyle("-fx-alignment: CENTER-RIGHT;");
