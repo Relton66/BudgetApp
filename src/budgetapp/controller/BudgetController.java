@@ -68,6 +68,9 @@ public class BudgetController implements Initializable {
     /** The category budget table. */
     @FXML
     private TableView categoryBudgetTable;
+    /** The category ID column. */
+    @FXML
+    private TableColumn categoryIdColumn;
     /** The category column. */
     @FXML
     private TableColumn categoryColumn;
@@ -87,9 +90,17 @@ public class BudgetController implements Initializable {
     @FXML
     private Button saveBtn;       
     /** The list of table entries. */
-    private final List<CategoryBudgetTableEntry> categoryTableList = new ArrayList();   
+    private List<CategoryBudgetTableEntry> categoryTableList = new ArrayList();   
     /** The HomeController instance. */
-    private HomeController homeController;    
+    private HomeController homeController;
+    /** The originalBudgetName used for edit budget. */
+    private String originalBudgetName;
+    /** The list of table entries for edit. */
+    private final List<CategoryBudgetTableEntry> originalCategoryList = new ArrayList();
+    /** The budget ID that is being edited. */
+    private int editedBudgetId = 0;
+    /** The edit budget flag. */
+    private boolean isEdit = false;
     /** The logger. */
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(BudgetController.class);
         
@@ -102,7 +113,7 @@ public class BudgetController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {         
         loadExistingBudgets();       
-    }
+    }   
     
     /**
      * This method sets the homeController instance.
@@ -184,8 +195,10 @@ public class BudgetController implements Initializable {
      * @param budgetStarting - the budget starting amount
      */
     private void addToCategoryTable(String categoryName, String budgetStarting) {
-        categoryTableList.add(new CategoryBudgetTableEntry(categoryName, 
-                StringUtil.convertToDollarFormat(budgetStarting.replace(",", "")))); 
+        CategoryBudgetTableEntry categoryBudget = new CategoryBudgetTableEntry();
+        categoryBudget.setCategoryName(categoryName);
+        categoryBudget.setBudgetStarting(StringUtil.convertToDollarFormat(budgetStarting.replace(",", "")));
+        categoryTableList.add(categoryBudget); 
         populateCategoryBudgetTable();
     }
     
@@ -215,9 +228,9 @@ public class BudgetController implements Initializable {
     private boolean categoryAlreadyExists(String categoryName) {
         List<String> currentCategoryList = new ArrayList<>();
         for(CategoryBudgetTableEntry entry : categoryTableList) {
-            currentCategoryList.add(entry.getCategoryName());
+            currentCategoryList.add(entry.getCategoryName().toUpperCase());
         }
-        return currentCategoryList.contains(categoryName);
+        return currentCategoryList.contains(categoryName.toUpperCase());
     }
     
     /**
@@ -229,11 +242,23 @@ public class BudgetController implements Initializable {
         budget.setStartDate(Date.valueOf(startDate.getValue()));
         budget.setEndDate(Date.valueOf(endDate.getValue()));
         budget.setStartBalance(StringUtil.convertFromDollarFormat(startBalance.getText()));
-        int budgetId = BudgetDAO.saveNewBudget(budget);           
-        saveNewCategories();
-        saveCategoryBudgets(budgetId);
-        homeController.refreshBudgetList(budgetId, budget);
-        saveBtn.setDisable(true);
+        if(isEdit) {
+            budget.setBudgetId(editedBudgetId);
+            BudgetDAO.updateBudget(budget);
+            saveNewCategories();
+            updateCategoryBudgets(editedBudgetId);
+            homeController.loadExistingBudgets(true);            
+            homeController.populateCategoryBudgetTable(editedBudgetId);
+            setEditVariables(editedBudgetId, budget.getBudgetName());
+        } else {        
+            int budgetId = BudgetDAO.saveNewBudget(budget);           
+            saveNewCategories();
+            saveCategoryBudgets(budgetId);
+            homeController.refreshBudgetList(budgetId, budget);
+            setEditVariables(budgetId, budget.getBudgetName());
+            Stage stage = (Stage) budgetBorderPane.getScene().getWindow();
+            stage.setTitle("Edit Budget");
+        }
     }
     
     /**
@@ -244,19 +269,79 @@ public class BudgetController implements Initializable {
     private void saveCategoryBudgets(int budgetId) {
         for(CategoryBudgetTableEntry entry : categoryTableList) {
             CategoryBudgetDAO.saveCategoryBudget(budgetId, CategoryDAO.findCategoryByName(
-                    entry.getCategoryName()).getCategoryId(), 
-                    StringUtil.convertFromDollarFormat(entry.getBudgetStarting()));
+                entry.getCategoryName()).getCategoryId(), 
+                StringUtil.convertFromDollarFormat(entry.getBudgetStarting()));
         }
     }
     
     /**
-     * This method will save any new categories.     
+     * This method updates the data in the category budget table.
+     * 
+     * @param budgetId - the budget ID   
+     */
+    private void updateCategoryBudgets(int budgetId) {        
+        for(CategoryBudgetTableEntry currentEntry : categoryTableList) {
+            boolean needToAdd = true;
+            for(CategoryBudgetTableEntry existingEntry : originalCategoryList) {
+                if(currentEntry.getCategoryName().equalsIgnoreCase(existingEntry.getCategoryName()) ||
+                        currentEntry.getCategoryId().equals(existingEntry.getCategoryId())) {
+                    needToAdd = false;
+                    updateBalances(budgetId, currentEntry.getCategoryName(),
+                        currentEntry.getBudgetStarting(), existingEntry.getBudgetStarting());
+                    break;
+                }
+            }
+            if(needToAdd) {            
+                CategoryBudgetDAO.saveCategoryBudget(budgetId, CategoryDAO.findCategoryByName(
+                    currentEntry.getCategoryName()).getCategoryId(), StringUtil.convertFromDollarFormat(
+                    currentEntry.getBudgetStarting()));
+            }
+        }
+    }
+    
+    /**
+     * This method updates the start and current balances for category budgets.
+     * 
+     * @param budgetId - the budget ID
+     * @param categoryName - the category name
+     * @param currentStartAmount - the current start amount
+     * @param existingStartAmount - the existing start amount
+     */
+    private void updateBalances(int budgetId, String categoryName, String currentStartAmount,
+                            String existingStartAmount) {
+        double currentAmount = StringUtil.convertFromDollarFormat(currentStartAmount);
+        double existingAmount = StringUtil.convertFromDollarFormat(existingStartAmount);
+        boolean amountIncreased = existingAmount < currentAmount;
+        double currentBalanceAdjustment;
+        if(amountIncreased) {
+            currentBalanceAdjustment = currentAmount - existingAmount;
+        } else {
+            currentBalanceAdjustment = existingAmount - currentAmount;
+        }
+        int categoryId = CategoryDAO.findCategoryByName(categoryName).getCategoryId();
+        if(currentAmount != existingAmount) {
+            CategoryBudgetDAO.updateStartingBalance(budgetId, categoryId, currentAmount,
+                    currentBalanceAdjustment, amountIncreased);
+        }   
+    }
+    
+    /**
+     * This method will save new categories or update an existing one
+     * with the new name.
      */
     private void saveNewCategories() {
-        List<String> existingCategories = CategoryDAO.getExistingCategories();        
+        List<String> existingCategories = CategoryDAO.getExistingCategories();
         for(CategoryBudgetTableEntry entry : categoryTableList) {
+            // First we make sure the current entry doesn't exist in our category list
             if(!existingCategories.contains(entry.getCategoryName())) {
-                CategoryDAO.saveCategory(entry.getCategoryName());
+                // If the ID is not present in entry, it's a brand new category
+                // Else the category name was renamed
+                if("".equals(entry.getCategoryId())) {
+                    CategoryDAO.saveCategory(entry.getCategoryName());
+                } else {
+                    CategoryDAO.updateCategoryName(entry.getCategoryName(), 
+                        Integer.parseInt(entry.getCategoryId()));
+                }
             }
         }        
     }
@@ -321,7 +406,11 @@ public class BudgetController implements Initializable {
     private boolean budgetNameIsUnique(String budgetName) {
         List<String> budgetNamesList = BudgetDAO.getExistingBudgetNames()
                 .stream().map(String::toUpperCase).collect(Collectors.toList());
-        return !budgetNamesList.contains(budgetName.toUpperCase());        
+        boolean isUnique = !budgetNamesList.contains(budgetName.toUpperCase());        
+        if(!isUnique && isEdit) {
+            isUnique = originalBudgetName.toUpperCase().equalsIgnoreCase(budgetName.toUpperCase());
+        }
+        return isUnique;
     }
     
     /**
@@ -361,10 +450,14 @@ public class BudgetController implements Initializable {
      */
     private void populateCategoryBudgetTable() {
         ObservableList data = FXCollections.observableList(categoryTableList);
+        categoryIdColumn.setCellValueFactory(new PropertyValueFactory("categoryId"));
+        categoryIdColumn.setCellFactory(TextFieldTableCell.<CategoryBudgetTableEntry>forTableColumn());
+        categoryIdColumn.setVisible(false);
+        
         categoryColumn.setCellValueFactory(new PropertyValueFactory("categoryName"));
         categoryColumn.setCellFactory(TextFieldTableCell.<CategoryBudgetTableEntry>forTableColumn());
         budgetStartingCol.setCellValueFactory(new PropertyValueFactory("budgetStarting"));
-        budgetStartingCol.setCellFactory(TextFieldTableCell.<CategoryBudgetTableEntry>forTableColumn());
+        budgetStartingCol.setCellFactory(TextFieldTableCell.<CategoryBudgetTableEntry>forTableColumn());        
         categoryBudgetTable.setItems(data);
         categoryBudgetTable.setEditable(true);
         
@@ -391,5 +484,38 @@ public class BudgetController implements Initializable {
                 return row ;  
             }  
         });
+    }
+    
+    /**
+     * This method populates the dialog for editing.
+     * 
+     * @param budgetId - the budget ID
+     */
+    public void populateForEdit(int budgetId) {
+        categoryTableList = CategoryBudgetDAO.getCategoryBudgetsForTable(budgetId);
+        Budget budget = BudgetDAO.findBudgetById(budgetId);        
+        nameField.setText(budget.getBudgetName());
+        startBalance.setText(String.format("%.2f", budget.getStartBalance()));
+        startDate.setValue(budget.getStartDate().toLocalDate());
+        endDate.setValue(budget.getEndDate().toLocalDate());
+        populateCategoryBudgetTable();
+        setEditVariables(budgetId, budget.getBudgetName());
+    }
+    
+    /**
+     * This method sets up the special variables needed for the
+     * edit screen.
+     * 
+     * @param budgetId - the budget ID
+     * @param budgetName - the budget name
+     */
+    private void setEditVariables(int budgetId, String budgetName) {
+        isEdit = true;
+        originalCategoryList.clear();
+        for(int i=0; i<categoryTableList.size(); i++) {
+            originalCategoryList.add(categoryTableList.get(i).clone());
+        }
+        editedBudgetId = budgetId;
+        originalBudgetName = budgetName;
     }
 }

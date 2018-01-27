@@ -54,18 +54,20 @@ public class CategoryBudgetDAO {
     public static List<CategoryBudgetTableEntry> getCategoryBudgetsForTable(int budgetId) {
         LOG.info("Attempting to get category budgets for budget ID {}", budgetId);
         List<CategoryBudgetTableEntry> categoryBudgetList = new ArrayList<>();
-        String query = "SELECT cat.category_name, catbud.current_balance, catbud.start_balance FROM category_budget"
-                + " catbud JOIN category cat ON catbud.category_id = cat.category_id WHERE catbud.budget_id = ?"
-                + " ORDER BY cat.category_name";
+        String query = "SELECT cat.category_id, cat.category_name, catbud.start_balance, catbud.current_balance "
+                + "FROM category_budget catbud JOIN category cat ON catbud.category_id = cat.category_id "
+                + "WHERE catbud.budget_id = ? ORDER BY cat.category_name";
         List<Object> parameters = new ArrayList<>();
         parameters.add(budgetId);
         try {
            ResultSet results = DBUtil.dbExecuteSelectQuery(query, parameters);
            while(results.next()) {
-               CategoryBudgetTableEntry categoryBudgetTable = new CategoryBudgetTableEntry(results.getString("CATEGORY_NAME"), 
-                        StringUtil.convertToDollarFormat(results.getString("START_BALANCE")),
-               StringUtil.convertToDollarFormat(results.getString("CURRENT_BALANCE")));
-               categoryBudgetList.add(categoryBudgetTable);
+               CategoryBudgetTableEntry categoryBudget = new CategoryBudgetTableEntry();
+               categoryBudget.setCategoryId(results.getString("CATEGORY_ID"));
+               categoryBudget.setCategoryName(results.getString("CATEGORY_NAME"));
+               categoryBudget.setBudgetStarting(StringUtil.convertToDollarFormat(results.getString("START_BALANCE")));
+               categoryBudget.setBudgetRemaining(StringUtil.convertToDollarFormat(results.getString("CURRENT_BALANCE")));               
+               categoryBudgetList.add(categoryBudget);
            }
         } catch (SQLException | ClassNotFoundException e) {
             LOG.error("getCategoryBudgetsForTable has failed", e);           
@@ -144,14 +146,47 @@ public class CategoryBudgetDAO {
         try {
            ResultSet results = DBUtil.dbExecuteSelectQuery(query, parameters);
            while(results.next()) {
-               CategoryBudgetTableEntry categoryBudgetTable = new CategoryBudgetTableEntry(results.getString("CATEGORY_NAME"), 
-                        results.getString("AMOUNT_SPENT"), results.getString("AMOUNT_SPENT"));
-               categoryDataList.add(categoryBudgetTable);
+               CategoryBudgetTableEntry categoryBudget = new CategoryBudgetTableEntry();
+               categoryBudget.setCategoryName(results.getString("CATEGORY_NAME"));
+               categoryBudget.setBudgetRemaining(results.getString("AMOUNT_SPENT"));
+               categoryDataList.add(categoryBudget);
            }
         } catch (SQLException | ClassNotFoundException e) {
             LOG.error("getDataForCategoryReport has failed", e);           
         }
         LOG.info("Category data retrieved successfully!");
         return categoryDataList;
+    }
+    
+    /**
+     * This method updates the category budget current balance.
+     * 
+     * @param budgetId - the budget ID
+     * @param categoryId - the category ID
+     * @param startBalance - the starting balance    
+     * @param currentBalanceAdjustment - the amount to adjust current balance
+     * @param amountIncreased - if true need to increase current balance
+     */
+    public static void updateStartingBalance(int budgetId, int categoryId, double startBalance,
+            double currentBalanceAdjustment, boolean amountIncreased) {
+        LOG.info("Attempting to update starting balance for budget ID {} and category ID {}", budgetId, categoryId);
+        String query = "UPDATE category_budget SET start_balance = ?, ";
+        if(amountIncreased) {
+            query += "current_balance = (current_balance + ?) ";
+        } else {
+            query += "current_balance = (current_balance - ?) ";
+        }
+        query += "WHERE budget_id = ? and category_id = ?";
+        List<Object> parameters = new ArrayList<>();
+        parameters.add(startBalance);
+        parameters.add(currentBalanceAdjustment);
+        parameters.add(budgetId);
+        parameters.add(categoryId);
+        try {
+            DBUtil.dbExecuteUpdate(query, parameters, "");
+            LOG.info("Category budget updated successfully");
+        } catch (SQLException | ClassNotFoundException e) {
+            LOG.error("updateStartingBalance has failed", e);            
+        }        
     }
 }

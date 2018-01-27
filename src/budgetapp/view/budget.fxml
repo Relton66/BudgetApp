@@ -42,6 +42,7 @@
    <center>
       <TableView fx:id="categoryBudgetTable" editable="true" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
         <columns>
+            <TableColumn fx:id="categoryIdColumn" editable="false" onEditCommit="#onCategoryEditCommit" prefWidth="75.0" text="Category ID" visible="false" />
           <TableColumn fx:id="categoryColumn" onEditCommit="#onCategoryEditCommit" prefWidth="75.0" text="Category Name" />
           <TableColumn fx:id="budgetStartingCol" onEditCommit="#onBudgetAmountEditCommit" prefWidth="75.0" text="Budget Amount" />
         </columns>

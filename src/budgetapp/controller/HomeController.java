@@ -102,6 +102,9 @@ public class HomeController implements Initializable {
     /** The budget category table. */
     @FXML
     private TableView categoryBudgetTable;
+    /** The category ID column. */
+    @FXML
+    private TableColumn categoryIdColumn;
     /** The category column. */
     @FXML
     private TableColumn categoryColumn;
@@ -139,7 +142,7 @@ public class HomeController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {        
         loadExistingVendors();
         loadActiveMethodTypes();
-        boolean budgetsExist = loadExistingBudgets();
+        boolean budgetsExist = loadExistingBudgets(false);
         if(budgetsExist) {
             loadExistingCategories(selectedBudgetId);
             // Default date to today
@@ -155,18 +158,20 @@ public class HomeController implements Initializable {
            
         // This handles the action when budget list changes
         budgetList.setOnAction((event) -> {
-            activeBudgetCheckBox.setSelected(false); 
-            String newBudgetName = budgetList.getSelectionModel().getSelectedItem().toString();
-            selectedBudgetId = getSelectedBudgetId(newBudgetName);
-            // Now we need to find the selected budget model and get balances
-            for(Budget budget : existingBudgetList) {
-                if(budget.getBudgetId() == selectedBudgetId) {
-                    displayBalanceLabel(startingBalanceLabel, budget.getStartBalance());
-                    displayBalanceLabel(currentBalanceLabel, budget.getCurrentBalance());
-                    break;
-                }
-            }            
-            loadExistingCategories(selectedBudgetId);            
+            if(budgetList.getSelectionModel().getSelectedItem() != null) {
+                activeBudgetCheckBox.setSelected(false); 
+                String newBudgetName = budgetList.getSelectionModel().getSelectedItem().toString();
+                selectedBudgetId = getSelectedBudgetId(newBudgetName);
+                // Now we need to find the selected budget model and get balances
+                for(Budget budget : existingBudgetList) {
+                    if(budget.getBudgetId() == selectedBudgetId) {
+                        displayBalanceLabel(startingBalanceLabel, budget.getStartBalance());
+                        displayBalanceLabel(currentBalanceLabel, budget.getCurrentBalance());
+                        break;
+                    }
+                }            
+                loadExistingCategories(selectedBudgetId);
+            }
         });
         
     }
@@ -221,18 +226,24 @@ public class HomeController implements Initializable {
     /**
      * This method loads the existing budgets and selects the active one.
      * 
+     * @param fromEdit - true if we're coming from edit budget
      * @return true if there are budgets     
      */    
-    public boolean loadExistingBudgets() {
+    public boolean loadExistingBudgets(boolean fromEdit) {
         existingBudgetList = BudgetDAO.getExistingBudgets();
         // We only need to store the names for the choicebox, so we build a new list
         ObservableList<String> existingBudgetNamesList = FXCollections.observableArrayList();
         int activeBudgetIndex = 0;
+        // If we're coming from edit, need to store the currently selected budget
+        if(fromEdit) {
+            activeBudgetIndex = budgetList.getSelectionModel().getSelectedIndex();
+        }
         // If no budgets exist, no need to set anything else up
         if(!existingBudgetList.isEmpty()) {
             for(int i=0; i< existingBudgetList.size(); i++) {
-                existingBudgetNamesList.add(existingBudgetList.get(i).getBudgetName());                
-                if(existingBudgetList.get(i).getActive()) {                    
+                existingBudgetNamesList.add(existingBudgetList.get(i).getBudgetName());     
+                // If we're coming from edit, don't look for active value
+                if(!fromEdit && existingBudgetList.get(i).getActive()) {                    
                     selectedBudgetId = existingBudgetList.get(i).getBudgetId();
                     activeBudgetIndex = i;
                     activeBudgetCheckBox.setSelected(true);                               
@@ -461,11 +472,16 @@ public class HomeController implements Initializable {
     public void populateCategoryBudgetTable(int budgetId) {
         categoryBudgetList = CategoryBudgetDAO.getCategoryBudgetsForTable(budgetId);
         ObservableList data = FXCollections.observableList(categoryBudgetList);
+        
+        categoryIdColumn.setCellValueFactory(new PropertyValueFactory("categoryId"));
+        categoryIdColumn.setCellFactory(TextFieldTableCell.<CategoryBudgetTableEntry>forTableColumn());
+        categoryIdColumn.setVisible(false);        
         categoryColumn.setCellValueFactory(new PropertyValueFactory("categoryName"));
         categoryColumn.setCellFactory(TextFieldTableCell.<CategoryBudgetTableEntry>forTableColumn());        
         budgetRemainingCol.setCellValueFactory(new PropertyValueFactory("budgetRemaining"));
         budgetRemainingCol.setStyle("-fx-alignment: CENTER-RIGHT;");        
         budgetRemainingCol.setCellFactory(new Callback<TableColumn, TableCell>() {
+            @Override
             public TableCell call(TableColumn param) {
                 return new TableCell<CategoryBudgetTableEntry, String>() {
                     @Override
@@ -486,7 +502,7 @@ public class HomeController implements Initializable {
         
         budgetStartingCol.setCellValueFactory(new PropertyValueFactory("budgetStarting"));
         budgetStartingCol.setCellFactory(TextFieldTableCell.<CategoryBudgetTableEntry>forTableColumn());
-        budgetStartingCol.setStyle("-fx-alignment: CENTER-RIGHT;");
+        budgetStartingCol.setStyle("-fx-alignment: CENTER-RIGHT;");       
         categoryBudgetTable.setItems(data);
     }
     
@@ -674,6 +690,26 @@ public class HomeController implements Initializable {
     }
     
     /**
+     * This method handles the edit budget button action.
+     * 
+     * @throws java.io.IOException - the IO exception
+     */
+    public void onEditBudgetBtnAction() throws IOException {
+        Stage stage = new Stage();
+        stage.setTitle("Edit Budget");
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(Main.class.getResource("view/budget.fxml"));
+        BorderPane border = (BorderPane) loader.load();
+        BudgetController bController = loader.getController();
+        bController.setHomeContoller(this);
+        bController.populateForEdit(selectedBudgetId);
+        Scene scene = new Scene(border);
+        stage.setScene(scene);
+        stage.setAlwaysOnTop(true);
+        stage.show();
+    }
+    
+    /**
      * This method handles the add new budget menu item.
      * 
      * @throws IOException - the IO exception
@@ -685,8 +721,8 @@ public class HomeController implements Initializable {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(Main.class.getResource("view/addBudget.fxml"));
         BorderPane border = (BorderPane) loader.load();
-        BudgetController abController = loader.getController();
-        abController.setHomeContoller(this);
+        BudgetController bController = loader.getController();
+        bController.setHomeContoller(this);
         Scene scene = new Scene(border);
         stage.setScene(scene);
         stage.setAlwaysOnTop(true);
@@ -750,8 +786,7 @@ public class HomeController implements Initializable {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(Main.class.getResource("view/reports.fxml"));
         BorderPane border = (BorderPane) loader.load();
-        ReportController rController = loader.getController();
-        rController.setHomeContoller(this);
+        ReportController rController = loader.getController();       
         rController.setBudgetId(selectedBudgetId);
         Scene scene = new Scene(border);
         stage.setScene(scene);

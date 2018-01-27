@@ -64,6 +64,7 @@
             <Label fx:id="currentBalanceLabel" layoutX="109.0" layoutY="114.0" text="\$0.00" />
             <Separator layoutX="7.0" layoutY="378.0" orientation="VERTICAL" prefHeight="108.0" prefWidth="6.0" />
             <CheckBox fx:id="activeBudgetCheckBox" layoutX="13.0" layoutY="70.0" mnemonicParsing="false" onAction="#onBudgetActiveAction" text="Set as Active Budget" />
+            <Button fx:id="editBudgetBtn" layoutX="167.0" layoutY="38.0" mnemonicParsing="false" onAction="#onEditBudgetBtnAction" text="Edit" />
          </children>
       </AnchorPane>
    </left>
@@ -105,6 +106,7 @@
    <right>
       <TableView fx:id="categoryBudgetTable" prefHeight="635.0" prefWidth="297.0" BorderPane.alignment="CENTER">
          <columns>
+            <TableColumn fx:id="categoryIdColumn" editable="false" prefWidth="75.0" text="Category ID" visible="false" />
             <TableColumn fx:id="categoryColumn" prefWidth="75.0" text="Category Name" />
             <TableColumn fx:id="budgetAmountColumn" editable="false" prefWidth="75.0" text="Budget">
                <columns>

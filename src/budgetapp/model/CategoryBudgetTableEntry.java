@@ -8,6 +8,8 @@ import javafx.beans.property.StringProperty;
  */
 public class CategoryBudgetTableEntry {
     
+    /** The category ID. */
+    private final SimpleStringProperty categoryId;
     /** The category name. */
     private final SimpleStringProperty categoryName;
     /** The budget starting amount. */
@@ -16,30 +18,57 @@ public class CategoryBudgetTableEntry {
     private final SimpleStringProperty budgetRemaining;
  
     /**
-     * The constructor for home screen.
+     * The constructor.
      * 
+     * @param categoryId - the category ID
      * @param categoryName - the category name
      * @param budgetStarting - the budget starting amount
      * @param budgetRemaining - the budget remaining amount
      */
-    public CategoryBudgetTableEntry(String categoryName, String budgetStarting, String budgetRemaining) {
+    public CategoryBudgetTableEntry(String categoryId, String categoryName, String budgetStarting, String budgetRemaining) {
+        this.categoryId = new SimpleStringProperty(categoryId);
         this.categoryName = new SimpleStringProperty(categoryName);
         this.budgetStarting = new SimpleStringProperty(budgetStarting);
         this.budgetRemaining = new SimpleStringProperty(budgetRemaining);   
     }
     
     /**
-     * The constructor for add budget screen.
-     * 
-     * @param categoryName - the category name
-     * @param budgetStarting - the budget starting amount     
+     * The constructor for home screen.     
      */
-    public CategoryBudgetTableEntry(String categoryName, String budgetStarting) {
-        this.categoryName = new SimpleStringProperty(categoryName);
-        this.budgetStarting = new SimpleStringProperty(budgetStarting);
-        this.budgetRemaining = this.budgetStarting;
-    }
+    public CategoryBudgetTableEntry() {
+        this.categoryId = new SimpleStringProperty();
+        this.categoryName = new SimpleStringProperty();
+        this.budgetStarting = new SimpleStringProperty();
+        this.budgetRemaining = new SimpleStringProperty();   
+    }   
  
+    /**
+     * Gets category ID value.
+     * 
+     * @return categoryId value
+     */
+    public final String getCategoryId() {
+        return categoryId.get();
+    }
+
+    /**
+     * Sets category ID value.
+     * 
+     * @param categoryId - the category ID to set.
+     */
+    public final void setCategoryId(String categoryId) {
+        this.categoryId.set(categoryId);
+    }
+    
+    /**
+     * Gets category ID property.
+     * 
+     * @return categoryId property
+     */
+    public SimpleStringProperty categoryIdProperty() {
+        return categoryId;
+    }
+    
     /**
      * Gets category name value.
      * 
@@ -119,5 +148,10 @@ public class CategoryBudgetTableEntry {
      */
     public StringProperty budgetRemainingProperty() {
         return budgetRemaining;
-    }        
+    }
+    
+    public CategoryBudgetTableEntry clone() {
+        return new CategoryBudgetTableEntry(this.categoryId.getValue(), this.categoryName.getValue(),
+            this.budgetStarting.getValue(), this.budgetRemaining.getValue());
+    }
 }

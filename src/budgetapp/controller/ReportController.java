@@ -43,9 +43,7 @@ public class ReportController implements Initializable {
     private PieChart pieChartField;
     /** The status message. */
     @FXML
-    private Label reportStatusMessage;
-    /** The HomeController instance. */
-    private HomeController homeController;
+    private Label reportStatusMessage;   
     /** The budget ID. */
     private int budgetId;
     /** The logger. */
@@ -70,15 +68,6 @@ public class ReportController implements Initializable {
         reportNameList.add(CATEGORY_REPORT);
         reportTypeList.setItems(reportNameList);
         reportTypeList.getSelectionModel().selectFirst();
-    }
-    
-    /**
-     * This method sets the homeController instance.
-     * 
-     * @param homeController - the homeController
-     */
-    public void setHomeContoller(HomeController homeController) {
-        this.homeController = homeController;
     }
     
     /**
@@ -109,7 +98,7 @@ public class ReportController implements Initializable {
         List<CategoryBudgetTableEntry> categoryBudgetList = CategoryBudgetDAO.getDataForCategoryReport(budgetId);
         ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
         pieChartData.add(new PieChart.Data("Amount Remaining", currentBalance));
-        for(CategoryBudgetTableEntry categoryBudget : categoryBudgetList) {
+        for(CategoryBudgetTableEntry categoryBudget : categoryBudgetList) {            
             pieChartData.add(new PieChart.Data(categoryBudget.getCategoryName(), Double.parseDouble(
                     categoryBudget.getBudgetRemaining())));
         }

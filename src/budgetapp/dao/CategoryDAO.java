@@ -116,4 +116,24 @@ public class CategoryDAO {
         LOG.info("Categories retrieved successfully!");
         return categoryList;
     }
+    
+    /**
+     * This method updates a category name.
+     * 
+     * @param categoryName - the category name
+     * @param categoryId - the category ID
+     */
+    public static void updateCategoryName(String categoryName, int categoryId) {
+        LOG.info("Attempting to update category ID {}", categoryId);        
+        String query = "UPDATE category set category_name = ? WHERE category_id = ?";
+        List<Object> parameters = new ArrayList<>();
+        parameters.add(categoryName);
+        parameters.add(categoryId);
+        try {
+           DBUtil.dbExecuteUpdate(query, parameters, "");
+        } catch (SQLException | ClassNotFoundException e) {
+            LOG.error("updateCategoryName has failed", e);           
+        }
+        LOG.info("Category ID {} was updated successfully to new name {}", categoryId, categoryName);
+    }
 }
