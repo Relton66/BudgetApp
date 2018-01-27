@@ -719,7 +719,7 @@ public class HomeController implements Initializable {
         Stage stage = new Stage();
         stage.setTitle("Add New Budget");
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(Main.class.getResource("view/addBudget.fxml"));
+        loader.setLocation(Main.class.getResource("view/budget.fxml"));
         BorderPane border = (BorderPane) loader.load();
         BudgetController bController = loader.getController();
         bController.setHomeContoller(this);

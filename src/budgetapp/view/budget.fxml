@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.DatePicker?>
@@ -54,12 +53,13 @@
    <bottom>
       <HBox alignment="CENTER" prefHeight="65.0" prefWidth="300.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="saveBtn" mnemonicParsing="false" onAction="#onSaveAction" text="Save">
-               <HBox.margin>
-                  <Insets right="20.0" />
-               </HBox.margin>
-            </Button>
-            <Button fx:id="closeBtn" mnemonicParsing="false" onAction="#onCloseAction" text="Close" />
+            <AnchorPane prefHeight="65.0" prefWidth="296.0">
+               <children>
+                  <Button fx:id="saveBtn" layoutX="97.0" layoutY="28.0" mnemonicParsing="false" onAction="#onSaveAction" text="Save" />
+                  <Button fx:id="closeBtn" layoutX="157.0" layoutY="28.0" mnemonicParsing="false" onAction="#onCloseAction" text="Close" />
+                  <Label fx:id="budgetTotalLabel" layoutX="71.0" layoutY="6.0" prefHeight="17.0" prefWidth="220.0" />
+               </children>
+            </AnchorPane>
          </children>
       </HBox>
    </bottom>

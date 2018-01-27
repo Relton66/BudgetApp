@@ -21,7 +21,6 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.DatePicker;
@@ -86,9 +85,11 @@ public class BudgetController implements Initializable {
     /** The previous budget list. */
     @FXML
     private ChoiceBox previousBudgetList;
-    /** The save button. */
+    /** The budget total label. */
     @FXML
-    private Button saveBtn;       
+    private Label budgetTotalLabel;
+    /** The budget total amount. */
+    private double budgetTotalAmount=0;
     /** The list of table entries. */
     private List<CategoryBudgetTableEntry> categoryTableList = new ArrayList();   
     /** The HomeController instance. */
@@ -174,6 +175,7 @@ public class BudgetController implements Initializable {
         ((CategoryBudgetTableEntry) t.getTableView().getItems().get(
             t.getTablePosition().getRow())
             ).setBudgetStarting(StringUtil.convertToDollarFormat(t.getNewValue()));
+        calculateBudgetTotal();
     }
             
     /**
@@ -200,6 +202,18 @@ public class BudgetController implements Initializable {
         categoryBudget.setBudgetStarting(StringUtil.convertToDollarFormat(budgetStarting.replace(",", "")));
         categoryTableList.add(categoryBudget); 
         populateCategoryBudgetTable();
+    }
+    
+    /**
+     * This method updates the budget total label
+     */
+    private void calculateBudgetTotal() {
+        budgetTotalAmount = 0;
+        for(CategoryBudgetTableEntry categoryBudget : categoryTableList) {
+            budgetTotalAmount += StringUtil.convertFromDollarFormat(categoryBudget.getBudgetStarting());
+        }
+        CommonUtil.displayMessage(budgetTotalLabel, "Current Category Budget Total:  " +
+            StringUtil.convertToDollarFormat(Double.toString(budgetTotalAmount)), true);
     }
     
     /**
@@ -343,7 +357,21 @@ public class BudgetController implements Initializable {
                         Integer.parseInt(entry.getCategoryId()));
                 }
             }
-        }        
+        }
+        // Need to loop through original and if not in current, delete it
+        for(CategoryBudgetTableEntry originalEntry : originalCategoryList) {
+            boolean wasDeleted = true;
+            for(CategoryBudgetTableEntry newEntry : categoryTableList) {
+                if(originalEntry.getCategoryName().equals(newEntry.getCategoryName())) {
+                    wasDeleted = false;
+                    break;
+                }
+            }
+            if(wasDeleted) {
+                CategoryBudgetDAO.deleteCategoryBudget(editedBudgetId, 
+                    Integer.parseInt(originalEntry.getCategoryId()));
+            }
+        }
     }
     
     /**
@@ -471,7 +499,8 @@ public class BudgetController implements Initializable {
                 removeMenuItem.setOnAction(new EventHandler<ActionEvent>() {  
                     @Override  
                     public void handle(ActionEvent event) {  
-                        categoryBudgetTable.getItems().remove(row.getItem());                        
+                        categoryBudgetTable.getItems().remove(row.getItem());
+                        calculateBudgetTotal();
                     }  
                 });  
                 contextMenu.getItems().add(removeMenuItem);  
@@ -484,6 +513,7 @@ public class BudgetController implements Initializable {
                 return row ;  
             }  
         });
+        calculateBudgetTotal();
     }
     
     /**

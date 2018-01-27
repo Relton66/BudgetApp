@@ -189,4 +189,24 @@ public class CategoryBudgetDAO {
             LOG.error("updateStartingBalance has failed", e);            
         }        
     }
+    
+    /**
+     * This method deletes a category budget.
+     * 
+     * @param budgetId - the budget ID
+     * @param categoryId - the category ID
+     */
+    public static void deleteCategoryBudget(int budgetId, int categoryId) {
+        LOG.info("Attempting to delete category budget with budget ID {} and category ID {}", budgetId, categoryId);
+        String query = "DELETE FROM category_budget WHERE budget_id = ? and category_id = ?";
+        List<Object> parameters = new ArrayList<>();
+        parameters.add(budgetId);
+        parameters.add(categoryId);
+        try {
+            DBUtil.dbExecuteUpdate(query, parameters, "");
+            LOG.info("Category budget deleted successfully");
+        } catch (SQLException | ClassNotFoundException e) {
+            LOG.error("deleteCategoryBudget has failed", e);           
+        }        
+    }
 }
