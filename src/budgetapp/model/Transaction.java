@@ -128,7 +128,7 @@ public class Transaction {
      * 
      * @return transDate value
      */
-    public final Object getTransDate() {
+    public final Date getTransDate() {
         return transDate.get();
     }
 

@@ -165,6 +165,21 @@ public class BudgetDAO {
     }
     
     /**
+     * This method clears the active flag for all budgets.     
+     */
+    public static void clearActiveBudget() {
+        LOG.info("Attempting to clear active fields for all budgets)");
+        String query = "UPDATE budget SET ACTIVE = 0";
+        List<Object> parameters = new ArrayList<>();
+        try {
+            DBUtil.dbExecuteUpdate(query, parameters, "");
+            LOG.info("Active budgets cleared successfully");
+        } catch (SQLException | ClassNotFoundException e) {
+            LOG.error("clearActiveBudget has failed", e);            
+        }       
+    }
+    
+    /**
      * This method updates the budgets current balance.
      * 
      * @param budgetId - the budget ID

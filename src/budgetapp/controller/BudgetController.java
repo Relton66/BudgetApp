@@ -298,7 +298,8 @@ public class BudgetController implements Initializable {
             boolean needToAdd = true;
             for(CategoryBudgetTableEntry existingEntry : originalCategoryList) {
                 if(currentEntry.getCategoryName().equalsIgnoreCase(existingEntry.getCategoryName()) ||
-                        currentEntry.getCategoryId().equals(existingEntry.getCategoryId())) {
+                        (currentEntry.getCategoryId() != null &&
+                        currentEntry.getCategoryId().equals(existingEntry.getCategoryId()))) {
                     needToAdd = false;
                     updateBalances(budgetId, currentEntry.getCategoryName(),
                         currentEntry.getBudgetStarting(), existingEntry.getBudgetStarting());
@@ -350,7 +351,7 @@ public class BudgetController implements Initializable {
             if(!existingCategories.contains(entry.getCategoryName())) {
                 // If the ID is not present in entry, it's a brand new category
                 // Else the category name was renamed
-                if("".equals(entry.getCategoryId())) {
+                if(entry.getCategoryId() == null) {
                     CategoryDAO.saveCategory(entry.getCategoryName());
                 } else {
                     CategoryDAO.updateCategoryName(entry.getCategoryName(), 
@@ -500,6 +501,7 @@ public class BudgetController implements Initializable {
                     @Override  
                     public void handle(ActionEvent event) {  
                         categoryBudgetTable.getItems().remove(row.getItem());
+                        removeFromCategoryTableList(row.getItem().getCategoryName());
                         calculateBudgetTotal();
                     }  
                 });  
@@ -517,19 +519,33 @@ public class BudgetController implements Initializable {
     }
     
     /**
+     * This method removes the category from our list after it has been
+     * removed from the table.
+     * 
+     * @param categoryName - the category name
+     */
+    private void removeFromCategoryTableList(String categoryName) {
+        for(int i=0; i < categoryTableList.size(); i++) {
+            if(categoryName.equalsIgnoreCase(categoryTableList.get(i).getCategoryName())) {
+                categoryTableList.remove(i);
+                break;
+            }
+        }
+    }
+    
+    /**
      * This method populates the dialog for editing.
      * 
      * @param budgetId - the budget ID
      */
     public void populateForEdit(int budgetId) {
-        categoryTableList = CategoryBudgetDAO.getCategoryBudgetsForTable(budgetId);
         Budget budget = BudgetDAO.findBudgetById(budgetId);        
         nameField.setText(budget.getBudgetName());
         startBalance.setText(String.format("%.2f", budget.getStartBalance()));
         startDate.setValue(budget.getStartDate().toLocalDate());
         endDate.setValue(budget.getEndDate().toLocalDate());
-        populateCategoryBudgetTable();
         setEditVariables(budgetId, budget.getBudgetName());
+        populateCategoryBudgetTable();        
     }
     
     /**
@@ -542,6 +558,7 @@ public class BudgetController implements Initializable {
     private void setEditVariables(int budgetId, String budgetName) {
         isEdit = true;
         originalCategoryList.clear();
+        categoryTableList = CategoryBudgetDAO.getCategoryBudgetsForTable(budgetId);
         for(int i=0; i<categoryTableList.size(); i++) {
             originalCategoryList.add(categoryTableList.get(i).clone());
         }

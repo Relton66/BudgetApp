@@ -96,6 +96,35 @@ public class TransactionDAO {
     }
     
     /**
+     * This method retrieves a transaction by ID.
+     * 
+     * @param transactionId - the transaction ID
+     * @return the transaction entity
+     */
+    public static Transaction getTransaction(int transactionId) {
+        LOG.info("Attempting to find transaction for ID {}", transactionId);
+        String query = "SELECT * FROM transaction WHERE transaction_id = ?";
+        Transaction transaction = new Transaction();
+        List<Object> parameters = new ArrayList<>();
+        parameters.add(transactionId);
+        try {
+            ResultSet results = DBUtil.dbExecuteSelectQuery(query, parameters);
+            while(results.next()) {
+                transaction.setTransactionId(results.getInt("TRANSACTION_ID"));
+                transaction.setTransDate(results.getDate("TRANS_DATE"));
+                transaction.setAmount(results.getDouble("AMOUNT"));
+                transaction.setIncome(results.getBoolean("INCOME"));
+                transaction.setVendorId(results.getInt("VENDOR_ID"));
+                transaction.setMethodId(results.getInt("METHOD_ID"));
+                transaction.setBudgetId(results.getInt("BUDGET_ID"));
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            LOG.error("getTransaction has failed", e);
+        }
+        return transaction;
+    }
+    
+    /**
      * This method deletes a transaction.
      * 
      * @param transactionId - the transaction ID     
@@ -110,6 +139,36 @@ public class TransactionDAO {
             LOG.info("Transaction saved successfully!");
         } catch (SQLException | ClassNotFoundException e) {
             LOG.error("saveTransaction has failed", e);            
+        }
+    }
+    
+    /**
+     * This method updates the transaction.
+     * 
+     * @param transaction - the Transaction class with all the required data    
+     */
+    public static void updateTransaction(Transaction transaction) {
+        LOG.info("Attempting to update transaction ID {}", transaction.getTransactionId());
+        boolean methodExists = transaction.getMethodId() != 0;
+        String query = "UPDATE transaction SET amount = ?, income = ?, trans_date = ?, vendor_id = ?";
+        if(methodExists) {
+            query += ", method_id = ?";    
+        }
+        query += " WHERE transaction_id = ?";
+        List<Object> parameters = new ArrayList<>();
+        parameters.add(transaction.getAmount());
+        parameters.add(transaction.getIncome());
+        parameters.add(transaction.getTransDate());             
+        parameters.add(transaction.getVendorId());
+        if(methodExists) {
+            parameters.add(transaction.getMethodId());
+        }
+        parameters.add(transaction.getTransactionId());
+        try {
+            DBUtil.dbExecuteUpdate(query, parameters, "");
+            LOG.info("Transaction updated successfully!");
+        } catch (SQLException | ClassNotFoundException e) {
+            LOG.error("updateTransaction has failed", e);            
         }
     }
 }

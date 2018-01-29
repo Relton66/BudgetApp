@@ -12,8 +12,8 @@ import budgetapp.model.Category;
 import budgetapp.model.CategoryBudgetTableEntry;
 import budgetapp.model.Transaction;
 import budgetapp.model.TransactionTableEntry;
-import budgetapp.model.Vendor;
 import budgetapp.util.CommonUtil;
+import budgetapp.util.Constants;
 import budgetapp.util.StringUtil;
 import java.io.IOException;
 import java.net.URL;
@@ -63,9 +63,7 @@ import org.slf4j.LoggerFactory;
  * The transaction controller class.
  */
 public class HomeController implements Initializable {
-
-    /** The constant for the None option in vendor list. */
-    private static final String LIST_NONE_OPTION = "None";
+    
     /** The amount field. */
     @FXML
     private TextField amountField;
@@ -144,7 +142,7 @@ public class HomeController implements Initializable {
         loadActiveMethodTypes();
         boolean budgetsExist = loadExistingBudgets(false);
         if(budgetsExist) {
-            loadExistingCategories(selectedBudgetId);
+            loadExistingCategories();
             // Default date to today
             transDateField.setValue(LocalDate.now());
         } else {
@@ -170,7 +168,7 @@ public class HomeController implements Initializable {
                         break;
                     }
                 }            
-                loadExistingCategories(selectedBudgetId);
+                loadExistingCategories();
             }
         });
         
@@ -197,7 +195,7 @@ public class HomeController implements Initializable {
      */    
     public void loadExistingVendors() {
         ObservableList<String> vendorsList = FXCollections.observableArrayList();
-        vendorsList.add(LIST_NONE_OPTION);
+        vendorsList.add(Constants.LIST_NONE_OPTION);
         vendorsList.addAll(VendorDAO.getExistingVendors());
         existingVendorList.setItems(vendorsList);
         existingVendorList.getSelectionModel().selectFirst();
@@ -205,11 +203,9 @@ public class HomeController implements Initializable {
     
     /**
      * This method loads the existing categories.
-     * 
-     * @param budgetId - the budget ID.    
      */    
-    public void loadExistingCategories(int budgetId) {
-        currentCategoryList = CategoryDAO.getCategoriesByBudgetId(budgetId);
+    public void loadExistingCategories() {
+        currentCategoryList = CategoryDAO.getCategoriesByBudgetId(selectedBudgetId);
         // We need a list of strings for the choicebox
         ObservableList<String> currentCategoryNameList = FXCollections.observableArrayList(); 
         if(!currentCategoryList.isEmpty()) {
@@ -218,9 +214,24 @@ public class HomeController implements Initializable {
             }
             categoryList.setItems(currentCategoryNameList);
             categoryList.getSelectionModel().selectFirst();
-            populateCategoryBudgetTable(budgetId);
+            populateCategoryBudgetTable(selectedBudgetId);
             buildTransactionTabPane(selectedBudgetId, currentCategoryList);
         }
+    }
+    
+    /**
+     * This method refreshes the tables after a transaction is edited.
+     */
+    public void refreshTablesAfterEdit() {
+        populateCategoryBudgetTable(selectedBudgetId);
+        buildTransactionTabPane(selectedBudgetId, currentCategoryList);
+    }
+    
+    /**
+     * This method updates the balance label after a transaction is edited.
+     */
+    public void updateBalanceAfterEdit() {
+        displayBalanceLabel(currentBalanceLabel, BudgetDAO.findBudgetCurrentBalance(selectedBudgetId));
     }
     
     /**
@@ -269,7 +280,7 @@ public class HomeController implements Initializable {
      */
     public void loadActiveMethodTypes() {
         ObservableList<String> activeMethodTypesList = FXCollections.observableArrayList();
-        activeMethodTypesList.add(LIST_NONE_OPTION);
+        activeMethodTypesList.add(Constants.LIST_NONE_OPTION);
         activeMethodTypesList.addAll(MethodDAO.getActiveMethodTypes());
         methodList.setItems(activeMethodTypesList);
         methodList.getSelectionModel().selectFirst();
@@ -307,7 +318,7 @@ public class HomeController implements Initializable {
             CommonUtil.displayMessage(statusMessage, "Amount entered has incorrect format.", false);
         } else if(transDateField.getValue() == null) {           
             CommonUtil.displayMessage(statusMessage, "Date is missing.", false);
-        } else if(LIST_NONE_OPTION.equalsIgnoreCase(existingVendorList.getValue().toString())) {
+        } else if(Constants.LIST_NONE_OPTION.equalsIgnoreCase(existingVendorList.getValue().toString())) {
             if(!StringUtil.isAlphaNumeric(newVendorField.getText())) {
                 CommonUtil.displayMessage(statusMessage, "New vendor name must be alphanumeric.", false);
             } else if(newVendorField.getText().length() > 50) {
@@ -328,7 +339,10 @@ public class HomeController implements Initializable {
      * This method saves the transaction.     
      */   
     public void saveNewTransaction() {
-        Transaction transaction = generateTransactionModel();
+        Transaction transaction = CommonUtil.generateTransactionModel(StringUtil.convertFromDollarFormat(
+            amountField.getText()), incomeCheckBoxField.isSelected(), Date.valueOf(transDateField.getValue()),
+            selectedBudgetId, methodList, existingVendorList.getSelectionModel().getSelectedItem().toString(),
+            newVendorField.getText(), categoryList.getSelectionModel().getSelectedItem().toString());       
         TransactionDAO.saveTransaction(transaction);        
         updateBalances(transaction);        
         displayMessage("Transaction successfully saved!", true);
@@ -351,42 +365,6 @@ public class HomeController implements Initializable {
         displayBalanceLabel(currentBalanceLabel, BudgetDAO.findBudgetCurrentBalance(selectedBudgetId));
         populateCategoryBudgetTable(selectedBudgetId);
         buildTransactionTabPane(selectedBudgetId, currentCategoryList);
-    }
-            
-            
-    /**
-     * This method builds the Transaction model.     
-     */   
-    private Transaction generateTransactionModel() {
-        Transaction transaction = new Transaction();
-        transaction.setAmount(StringUtil.convertFromDollarFormat(amountField.getText()));
-        transaction.setIncome(incomeCheckBoxField.isSelected());
-        transaction.setTransDate(Date.valueOf(transDateField.getValue()));
-        transaction.setBudgetId(selectedBudgetId);        
-        transaction.setVendorId(processVendorId());
-        if(methodList.getValue() != null) {
-            transaction.setMethodId(MethodDAO.findMethodId(methodList.getSelectionModel()
-                    .getSelectedItem().toString()));
-        }
-        return transaction;
-    }
-    
-    /**
-     * This method determines the vendor ID.    
-     */   
-    private int processVendorId() {
-        String vendorName = existingVendorList.getSelectionModel().getSelectedItem().toString();        
-        int vendorId;
-        if(LIST_NONE_OPTION.equalsIgnoreCase(vendorName)) {
-            // Need to save new vendor first.
-            vendorId = VendorDAO.saveVendor(newVendorField.getText(), 
-                    categoryList.getSelectionModel().getSelectedItem().toString());
-        } else {
-            // Vendor already exists so we just retrieve the ID.
-            Vendor vendor = VendorDAO.findVendorByName(vendorName);
-            vendorId = vendor.getVendorId();
-        }
-        return vendorId;
     }
     
     /**
@@ -436,7 +414,7 @@ public class HomeController implements Initializable {
      */    
     public void onBudgetActiveAction() {
         // First, set active = false for whatever previous budget was selected.
-        BudgetDAO.updateActiveBudget(selectedBudgetId, false);
+        BudgetDAO.clearActiveBudget();
         // Since the checkbox is cleared when selection changes, we need to find
         // new activeBudgetId if checkbox was selected.
         if(activeBudgetCheckBox.isSelected()) {
@@ -554,80 +532,25 @@ public class HomeController implements Initializable {
         dateColumn.setCellFactory(TextFieldTableCell.<TransactionTableEntry>forTableColumn());
         dateColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
         
-        dateColumn.setOnEditCommit(
-            new EventHandler<TableColumn.CellEditEvent<TransactionTableEntry, String>>() {
-                @Override
-                public void handle(TableColumn.CellEditEvent<TransactionTableEntry, String> t) {
-                    ((TransactionTableEntry) t.getTableView().getItems().get(
-                            t.getTablePosition().getRow())
-                            ).setTransDate(t.getNewValue());
-                }
-            }
-        );
-        
         TableColumn vendorColumn = new TableColumn("Vendor");
         vendorColumn.setCellValueFactory(new PropertyValueFactory("vendorName"));
         vendorColumn.setCellFactory(TextFieldTableCell.<TransactionTableEntry>forTableColumn());
         vendorColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
-        
-        vendorColumn.setOnEditCommit(
-            new EventHandler<TableColumn.CellEditEvent<TransactionTableEntry, String>>() {
-                @Override
-                public void handle(TableColumn.CellEditEvent<TransactionTableEntry, String> t) {
-                    ((TransactionTableEntry) t.getTableView().getItems().get(
-                            t.getTablePosition().getRow())
-                            ).setVendorName(t.getNewValue());
-                }
-            }
-        );
         
         TableColumn amountColumn = new TableColumn("Amount");
         amountColumn.setCellValueFactory(new PropertyValueFactory("amount"));
         amountColumn.setCellFactory(TextFieldTableCell.<TransactionTableEntry>forTableColumn());
         amountColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
         
-        amountColumn.setOnEditCommit(
-            new EventHandler<TableColumn.CellEditEvent<TransactionTableEntry, String>>() {
-                @Override
-                public void handle(TableColumn.CellEditEvent<TransactionTableEntry, String> t) {
-                    ((TransactionTableEntry) t.getTableView().getItems().get(
-                            t.getTablePosition().getRow())
-                            ).setAmount(t.getNewValue());
-                }
-            }
-        );
-                
         TableColumn categoryColumn = new TableColumn("Category Name");
         categoryColumn.setCellValueFactory(new PropertyValueFactory("categoryName"));
         categoryColumn.setCellFactory(TextFieldTableCell.<TransactionTableEntry>forTableColumn());
         categoryColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
         
-        categoryColumn.setOnEditCommit(
-            new EventHandler<TableColumn.CellEditEvent<TransactionTableEntry, String>>() {
-                @Override
-                public void handle(TableColumn.CellEditEvent<TransactionTableEntry, String> t) {
-                    ((TransactionTableEntry) t.getTableView().getItems().get(
-                            t.getTablePosition().getRow())
-                            ).setCategoryName(t.getNewValue());
-                }
-            }
-        );
-        
         TableColumn methodColumn = new TableColumn("Method Type");
         methodColumn.setCellValueFactory(new PropertyValueFactory("methodType"));
         methodColumn.setCellFactory(TextFieldTableCell.<TransactionTableEntry>forTableColumn());
-        methodColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
-        
-        methodColumn.setOnEditCommit(
-            new EventHandler<TableColumn.CellEditEvent<TransactionTableEntry, String>>() {
-                @Override
-                public void handle(TableColumn.CellEditEvent<TransactionTableEntry, String> t) {
-                    ((TransactionTableEntry) t.getTableView().getItems().get(
-                            t.getTablePosition().getRow())
-                            ).setMethodType(t.getNewValue());
-                }
-            }
-        );
+        methodColumn.setStyle("-fx-alignment: CENTER-RIGHT;");       
         
         transactionTable.getColumns()
                 .addAll(dateColumn, vendorColumn, amountColumn, categoryColumn, methodColumn);
@@ -642,6 +565,18 @@ public class HomeController implements Initializable {
             public TableRow<TransactionTableEntry> call(TableView<TransactionTableEntry> tableView) {  
                 final TableRow<TransactionTableEntry> row = new TableRow<>();  
                 final ContextMenu contextMenu = new ContextMenu();  
+                final MenuItem editMenuItem = new MenuItem("Edit Transaction");  
+                editMenuItem.setOnAction(new EventHandler<ActionEvent>() {  
+                    @Override  
+                    public void handle(ActionEvent event) {
+                        try {             
+                            onEditTransaction(row.getItem());
+                        } catch (IOException ex) {
+                            LOG.error("IO Exception in edit transaction action", ex);
+                        }
+                    }  
+                });
+                
                 final MenuItem deleteMenuItem = new MenuItem("Delete Transaction");  
                 deleteMenuItem.setOnAction(new EventHandler<ActionEvent>() {  
                     @Override  
@@ -658,7 +593,8 @@ public class HomeController implements Initializable {
                         }                     
                     }  
                 });  
-                contextMenu.getItems().add(deleteMenuItem);  
+                contextMenu.getItems().add(editMenuItem);
+                contextMenu.getItems().add(deleteMenuItem);                
                 // Set context menu on row, but use a binding to make it only show for non-empty rows:  
                 row.contextMenuProperty().bind(  
                         Bindings.when(row.emptyProperty())  
@@ -703,6 +639,27 @@ public class HomeController implements Initializable {
         BudgetController bController = loader.getController();
         bController.setHomeContoller(this);
         bController.populateForEdit(selectedBudgetId);
+        Scene scene = new Scene(border);
+        stage.setScene(scene);
+        stage.setAlwaysOnTop(true);
+        stage.show();
+    }
+    
+    /**
+     * This method sets up the edit transaction dialog.
+     * 
+     * @param transactionEntry - the transaction row entry
+     * @throws IOException - the IO exception
+     */
+    private void onEditTransaction(TransactionTableEntry transactionEntry) throws IOException {
+        Stage stage = new Stage();
+        stage.setTitle("Edit Transaction");
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(Main.class.getResource("view/editTransaction.fxml"));
+        BorderPane border = (BorderPane) loader.load();
+        EditTransactionController etController = loader.getController();
+        etController.setHomeContoller(this);
+        etController.populateFields(selectedBudgetId, transactionEntry);
         Scene scene = new Scene(border);
         stage.setScene(scene);
         stage.setAlwaysOnTop(true);
