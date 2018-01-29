@@ -100,31 +100,32 @@ public class EditTransactionController implements Initializable {
      */
     public void onSubmitBtnAction() {
         if(inputIsValid()) {
-            updateTransaction();
+            beginSaveProcess();
         }        
     }
     
     /**
-     * This method saves the edit and refreshes the tables.
+     * This method starts the save process.
      */
-    private void updateTransaction() {
+    private void beginSaveProcess() {
         double newAmount = StringUtil.convertFromDollarFormat(amountField.getText());
         String categoryName = categoryList.getSelectionModel().getSelectedItem().toString();
         int categoryId = findCategoryId(categoryName);
-        saveTransaction(newAmount, categoryName);
-        updateBalances(originalAmount, newAmount, categoryId);
+        saveTransactionData(newAmount, categoryName);
+        updateBalances(newAmount, categoryId);
         homeController.refreshTablesAfterEdit();
         CommonUtil.displayMessage(statusMessage, "Transaction updated successfully", true);
+        originalAmount = newAmount;
+        originalIncomeValue = incomeCheckBox.isSelected();
     }
     
     /**
      * This method updates the budget and category budget balances.
-     * 
-     * @param originalAmount - the original amount
+     *
      * @param newAmount - the new amount
      * @param categoryId - the category ID
      */
-    private void updateBalances(double originalAmount, double newAmount, int categoryId) {
+    private void updateBalances(double newAmount, int categoryId) {
         boolean newIncomeValue = incomeCheckBox.isSelected();
         double amountChanged = Math.abs(originalAmount - newAmount);
         boolean needToUpdateBalances = (amountChanged > 0) || (originalIncomeValue != newIncomeValue);
@@ -151,12 +152,12 @@ public class EditTransactionController implements Initializable {
     }
     
     /**
-     * This method saves the transaction only.
+     * This method saves the transaction data only.
      * 
      * @param newAmount - the new amount value
      * @param categoryName - the category name
      */
-    private void saveTransaction(double newAmount, String categoryName) {
+    private void saveTransactionData(double newAmount, String categoryName) {
         Transaction transaction = CommonUtil.generateTransactionModel(newAmount,
             incomeCheckBox.isSelected(), Date.valueOf(dateField.getValue()), budgetId,
             methodList, existingVendorList.getSelectionModel().getSelectedItem().toString(),

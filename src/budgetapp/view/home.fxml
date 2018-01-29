@@ -77,16 +77,12 @@
                   <MenuItem fx:id="exitMenuItem" mnemonicParsing="false" onAction="#onExitMenuItem" text="Exit" />
             </items>
           </Menu>
-          <Menu mnemonicParsing="false" text="Budgets">
+          <Menu mnemonicParsing="false" text="Edit">
             <items>
               <MenuItem fx:id="addNewBudgetMenu" mnemonicParsing="false" onAction="#onAddNewBudget" text="Add New Budget" />
+                  <MenuItem fx:id="manageMethodMenu" mnemonicParsing="false" onAction="#onManageMethodAction" text="Add/Edit Method Types" />
             </items>
           </Menu>
-            <Menu mnemonicParsing="false" text="Method Types">
-               <items>
-                  <MenuItem fx:id="manageMethodMenu" mnemonicParsing="false" onAction="#onManageMethodAction" text="Manage Method Types" />
-               </items>
-            </Menu>
           <Menu mnemonicParsing="false" text="View">
             <items>
               <MenuItem fx:id="viewReportsMenuItem" mnemonicParsing="false" onAction="#onViewReportsAction" text="Reports" />
