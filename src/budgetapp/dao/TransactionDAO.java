@@ -31,15 +31,16 @@ public class TransactionDAO {
         boolean noMethodId = transaction.getMethodId() == 0;
         String query;        
         if(noMethodId) {
-            query = "INSERT INTO transaction (transaction_id, amount, income, trans_date, vendor_id, budget_id) values (transaction_seq.nextval, ?, ?, ?, ?, ?)";    
+            query = "INSERT INTO transaction (transaction_id, amount, income, trans_date, vendor_id, comments, budget_id) values (transaction_seq.nextval, ?, ?, ?, ?, ?, ?)";    
         } else {
-            query = "INSERT INTO transaction (transaction_id, amount, income, trans_date, vendor_id, budget_id, method_id) values (transaction_seq.nextval, ?, ?, ?, ?, ?, ?)";    
+            query = "INSERT INTO transaction (transaction_id, amount, income, trans_date, vendor_id, comments, budget_id, method_id) values (transaction_seq.nextval, ?, ?, ?, ?, ?, ?, ?)";    
         }
         List<Object> parameters = new ArrayList<>();
         parameters.add(transaction.getAmount());
         parameters.add(transaction.getIncome());
         parameters.add(transaction.getTransDate());             
         parameters.add(transaction.getVendorId());
+        parameters.add(transaction.getComments());
         parameters.add(transaction.getBudgetId());
         if(transaction.getMethodId() != 0) {
             parameters.add(transaction.getMethodId());
@@ -67,7 +68,7 @@ public class TransactionDAO {
         List<Object> parameters = new ArrayList<>();
         parameters.add(budgetId);
         String query = "SELECT transaction_id, TO_CHAR(trans_date, 'Mon-DD-YYYY') AS trans_date, vendor_name, amount, (CASE WHEN income = 1 THEN 'YES' ELSE 'NO' END) AS income, "
-                + "category_name, method_type FROM transaction tran JOIN vendor ven ON tran.vendor_id = ven.vendor_id JOIN category cat "
+                + "category_name, method_type, comments FROM transaction tran JOIN vendor ven ON tran.vendor_id = ven.vendor_id JOIN category cat "
                 + "ON ven.category_id = cat.category_id LEFT OUTER JOIN method met ON tran.method_id = met.method_id "
                 + "WHERE tran.budget_id = ? ";
         if(perCategory) {
@@ -86,7 +87,8 @@ public class TransactionDAO {
                 }                
                 TransactionTableEntry transTableEntry = new TransactionTableEntry(results.getString("TRANSACTION_ID"),
                     results.getString("TRANS_DATE"), results.getString("VENDOR_NAME"), convertedAmount,
-                    results.getString("INCOME"), results.getString("CATEGORY_NAME"), results.getString("METHOD_TYPE"));
+                    results.getString("INCOME"), results.getString("CATEGORY_NAME"), results.getString("METHOD_TYPE"),
+                    results.getString("COMMENTS"));
                 transactionList.add(transTableEntry);
             } 
         } catch (SQLException | ClassNotFoundException e) {
@@ -117,6 +119,7 @@ public class TransactionDAO {
                 transaction.setVendorId(results.getInt("VENDOR_ID"));
                 transaction.setMethodId(results.getInt("METHOD_ID"));
                 transaction.setBudgetId(results.getInt("BUDGET_ID"));
+                transaction.setComments(results.getString("COMMENTS"));
             }
         } catch (SQLException | ClassNotFoundException e) {
             LOG.error("getTransaction has failed", e);
@@ -150,7 +153,7 @@ public class TransactionDAO {
     public static void updateTransaction(Transaction transaction) {
         LOG.info("Attempting to update transaction ID {}", transaction.getTransactionId());
         boolean methodExists = transaction.getMethodId() != 0;
-        String query = "UPDATE transaction SET amount = ?, income = ?, trans_date = ?, vendor_id = ?";
+        String query = "UPDATE transaction SET amount = ?, income = ?, trans_date = ?, vendor_id = ?, comments = ?";
         if(methodExists) {
             query += ", method_id = ?";    
         }
@@ -160,6 +163,7 @@ public class TransactionDAO {
         parameters.add(transaction.getIncome());
         parameters.add(transaction.getTransDate());             
         parameters.add(transaction.getVendorId());
+        parameters.add(transaction.getComments());
         if(methodExists) {
             parameters.add(transaction.getMethodId());
         }

@@ -21,6 +21,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.DatePicker;
@@ -85,9 +86,9 @@ public class BudgetController implements Initializable {
     /** The previous budget list. */
     @FXML
     private ChoiceBox previousBudgetList;
-    /** The budget total label. */
+    /** The budget total field. */
     @FXML
-    private Label budgetTotalLabel;
+    private TextField budgetTotalField;
     /** The budget total amount. */
     private double budgetTotalAmount=0;
     /** The list of table entries. */
@@ -113,7 +114,15 @@ public class BudgetController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {         
-        loadExistingBudgets();       
+        budgetTotalField.setEditable(false);
+        budgetTotalField.setAlignment(Pos.CENTER_RIGHT);
+        loadExistingBudgets();
+        
+        // When user types in here, it's implied they aren't wanting to use the
+        // existing vendor field so change it to default.
+        startBalance.textProperty().addListener((observable, oldValue, newValue) -> {
+            calculateBudgetTotal();
+        });
     }   
     
     /**
@@ -208,12 +217,16 @@ public class BudgetController implements Initializable {
      * This method updates the budget total label
      */
     private void calculateBudgetTotal() {
-        budgetTotalAmount = 0;
+        budgetTotalAmount = 0;        
         for(CategoryBudgetTableEntry categoryBudget : categoryTableList) {
             budgetTotalAmount += StringUtil.convertFromDollarFormat(categoryBudget.getBudgetStarting());
         }
-        CommonUtil.displayMessage(budgetTotalLabel, "Current Category Budget Total:  " +
-            StringUtil.convertToDollarFormat(Double.toString(budgetTotalAmount)), true);
+        if(budgetTotalAmount >  StringUtil.convertFromDollarFormat(startBalance.getText())) {
+            budgetTotalField.setStyle("-fx-text-inner-color: red;");
+        } else {
+            budgetTotalField.setStyle("-fx-text-inner-color: green;");
+        }
+        budgetTotalField.setText(StringUtil.convertToDollarFormat(Double.toString(budgetTotalAmount)));        
     }
     
     /**
@@ -263,7 +276,7 @@ public class BudgetController implements Initializable {
             updateCategoryBudgets(editedBudgetId);
             homeController.loadExistingBudgets(true);            
             homeController.populateCategoryBudgetTable(editedBudgetId);
-            setEditVariables(editedBudgetId, budget.getBudgetName());
+            setEditVariables(editedBudgetId, budget.getBudgetName());            
         } else {        
             int budgetId = BudgetDAO.saveNewBudget(budget);           
             saveNewCategories();
@@ -273,6 +286,7 @@ public class BudgetController implements Initializable {
             Stage stage = (Stage) budgetBorderPane.getScene().getWindow();
             stage.setTitle("Edit Budget");
         }
+        populateCategoryBudgetTable();
     }
     
     /**
@@ -403,13 +417,13 @@ public class BudgetController implements Initializable {
         if(!StringUtil.isAlphaNumeric(nameField.getText())) {
             CommonUtil.displayMessage(budgetStatusMessage, "Budget name must be alphanumeric.", false);
         } else if(nameField.getText().length() > 50) {
-            CommonUtil.displayMessage(budgetStatusMessage, "Budget name must be less than 51 characters.", false);
+            CommonUtil.displayMessage(budgetStatusMessage, "Budget name cannot be more than 50 characters.", false);
         } else if(!budgetNameIsUnique(nameField.getText())) {
             CommonUtil.displayMessage(budgetStatusMessage, "Budget name already exists.", false);         
         } else if(!StringUtil.isValidDollarAmount(startBalance.getText())) {
             CommonUtil.displayMessage(budgetStatusMessage, "Starting balance entered has incorrect format.", false);
         } else if(startBalance.getText().length() > 50) {
-            CommonUtil.displayMessage(budgetStatusMessage, "Starting balance must be less than 51 characters.", false);
+            CommonUtil.displayMessage(budgetStatusMessage, "Starting balance cannot be more than 50 characters.", false);
         } else if(startDate.getValue() == null) {           
             CommonUtil.displayMessage(budgetStatusMessage, "Start date is missing.", false);
         } else if(endDate.getValue() == null) {           

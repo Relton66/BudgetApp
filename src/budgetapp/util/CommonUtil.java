@@ -39,15 +39,17 @@ public class CommonUtil {
      * @param vendorName - the vendor name
      * @param newVendorName - the new vendor name
      * @param categoryName - the category name
+     * @param comments - the comments
      * @return the transaction model with all data set
      */   
     public static Transaction generateTransactionModel(double amount, boolean isIncome, Date transDate, int budgetId,
-            ChoiceBox methodList, String vendorName, String newVendorName, String categoryName) {
+            ChoiceBox methodList, String vendorName, String newVendorName, String categoryName, String comments) {
         Transaction transaction = new Transaction();
         transaction.setAmount(amount);
         transaction.setIncome(isIncome);
         transaction.setTransDate(transDate);
-        transaction.setBudgetId(budgetId);        
+        transaction.setBudgetId(budgetId);
+        transaction.setComments(comments);
         transaction.setVendorId(processVendorId(vendorName, newVendorName, categoryName));
         if(methodList.getValue() != null) {
             transaction.setMethodId(MethodDAO.findMethodId(methodList.getSelectionModel()

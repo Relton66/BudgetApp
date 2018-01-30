@@ -25,6 +25,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -40,10 +41,13 @@ public class EditTransactionController implements Initializable {
     private BorderPane editTransBorderPane;
     /** The date field. */
     @FXML
-    private DatePicker dateField;
+    private DatePicker transDateField;
     /** The existing vendor list. */
     @FXML
     private ChoiceBox existingVendorList;
+    /** The vendor category list to show what is linked. */
+    @FXML
+    private ChoiceBox vendorCategoryList;
     /** The new vendor field. */
     @FXML
     private TextField newVendorField;
@@ -52,13 +56,16 @@ public class EditTransactionController implements Initializable {
     private TextField amountField;
     /** The income check box. */
     @FXML
-    private CheckBox incomeCheckBox;
+    private CheckBox incomeCheckBoxField;
     /** The category list. */
     @FXML
     private ChoiceBox categoryList;
     /** The method list. */
     @FXML
     private ChoiceBox methodList;
+    /** The comments box. */
+    @FXML
+    private TextArea commentArea;
     /** The status message. */
     @FXML
     private Label statusMessage;
@@ -105,6 +112,13 @@ public class EditTransactionController implements Initializable {
     }
     
     /**
+     * This method handles the edit category button action.
+     */
+    public void onEditCategoryBtnAction() {
+        vendorCategoryList.setDisable(false);
+    }
+    
+    /**
      * This method starts the save process.
      */
     private void beginSaveProcess() {
@@ -114,9 +128,9 @@ public class EditTransactionController implements Initializable {
         saveTransactionData(newAmount, categoryName);
         updateBalances(newAmount, categoryId);
         homeController.refreshTablesAfterEdit();
-        CommonUtil.displayMessage(statusMessage, "Transaction updated successfully", true);
+        CommonUtil.displayMessage(statusMessage, "Transaction updated successfully!", true);
         originalAmount = newAmount;
-        originalIncomeValue = incomeCheckBox.isSelected();
+        originalIncomeValue = incomeCheckBoxField.isSelected();
     }
     
     /**
@@ -126,7 +140,7 @@ public class EditTransactionController implements Initializable {
      * @param categoryId - the category ID
      */
     private void updateBalances(double newAmount, int categoryId) {
-        boolean newIncomeValue = incomeCheckBox.isSelected();
+        boolean newIncomeValue = incomeCheckBoxField.isSelected();
         double amountChanged = Math.abs(originalAmount - newAmount);
         boolean needToUpdateBalances = (amountChanged > 0) || (originalIncomeValue != newIncomeValue);
         if(needToUpdateBalances) {            
@@ -159,9 +173,9 @@ public class EditTransactionController implements Initializable {
      */
     private void saveTransactionData(double newAmount, String categoryName) {
         Transaction transaction = CommonUtil.generateTransactionModel(newAmount,
-            incomeCheckBox.isSelected(), Date.valueOf(dateField.getValue()), budgetId,
+            incomeCheckBoxField.isSelected(), Date.valueOf(transDateField.getValue()), budgetId,
             methodList, existingVendorList.getSelectionModel().getSelectedItem().toString(),
-            newVendorField.getText(), categoryName);
+            newVendorField.getText(), categoryName, commentArea.getText());
         transaction.setTransactionId(transactionId);
         TransactionDAO.updateTransaction(transaction);
     }
@@ -210,10 +224,11 @@ public class EditTransactionController implements Initializable {
         this.budgetId = budgetId;
         transactionId = Integer.valueOf(transactionEntry.getTransactionId());
         Transaction transaction = TransactionDAO.getTransaction(transactionId);
-        dateField.setValue(transaction.getTransDate().toLocalDate());
+        transDateField.setValue(transaction.getTransDate().toLocalDate());
+        commentArea.setText(transaction.getComments());
         amountField.setText(String.format("%.2f", transaction.getAmount()));
         originalAmount = transaction.getAmount();
-        incomeCheckBox.setSelected(transaction.getIncome());
+        incomeCheckBoxField.setSelected(transaction.getIncome());
         originalIncomeValue = transaction.getIncome();
         loadVendorList(transactionEntry.getVendorName());
         loadCategoryList(budgetId, transactionEntry.getCategoryName());
@@ -293,8 +308,10 @@ public class EditTransactionController implements Initializable {
         
         if(!StringUtil.isValidDollarAmount(amountField.getText())) {                        
             CommonUtil.displayMessage(statusMessage, "Amount entered has incorrect format.", false);
-        } else if(dateField.getValue() == null) {           
+        } else if(transDateField.getValue() == null) {           
             CommonUtil.displayMessage(statusMessage, "Date is missing.", false);
+        } else if(commentArea.getText().length() > 100) {
+            CommonUtil.displayMessage(statusMessage, "Comments cannot be more than 100 characters.", false);
         } else if(Constants.LIST_NONE_OPTION.equalsIgnoreCase(existingVendorList.getValue().toString())) {
             if(!StringUtil.isAlphaNumeric(newVendorField.getText())) {
                 CommonUtil.displayMessage(statusMessage, "New vendor name must be alphanumeric.", false);

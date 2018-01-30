@@ -21,7 +21,9 @@ public class TransactionTableEntry {
     /** The category name. */
     private final SimpleStringProperty categoryName;
     /** The method name. */
-    private final SimpleStringProperty methodType;  
+    private final SimpleStringProperty methodType;
+    /** The comments. */
+    private final SimpleStringProperty comments;
     
     /**
      * The constructor.
@@ -33,8 +35,10 @@ public class TransactionTableEntry {
      * @param income - the income
      * @param categoryName - the category name
      * @param methodType - the method type
+     * @param comments - the comments
      */
-    public TransactionTableEntry(String transactionId, String transDate, String vendorName, String amount, String income, String categoryName, String methodType) {
+    public TransactionTableEntry(String transactionId, String transDate, String vendorName,
+            String amount, String income, String categoryName, String methodType, String comments) {
         this.transactionId = new SimpleStringProperty(transactionId);
         this.transDate = new SimpleStringProperty(transDate);
         this.vendorName = new SimpleStringProperty(vendorName);
@@ -42,6 +46,7 @@ public class TransactionTableEntry {
         this.income = new SimpleStringProperty(income);
         this.categoryName = new SimpleStringProperty(categoryName);
         this.methodType = new SimpleStringProperty(methodType);
+        this.comments = new SimpleStringProperty(comments);
     }
 
     /**
@@ -231,6 +236,33 @@ public class TransactionTableEntry {
      */
     public StringProperty methodTypeProperty() {
         return methodType;
+    }
+    
+    /**
+     * Gets comments value.
+     * 
+     * @return comments value
+     */
+    public final String getComments() {
+        return comments.get();
+    }
+    
+    /**
+     * Sets comments value.
+     * 
+     * @param comments - the comments value to set.
+     */
+    public final void setComments(String comments) {
+        this.comments.set(comments);
+    }
+    
+    /**
+     * Gets comments property.
+     * 
+     * @return comments property
+     */
+    public StringProperty commentsProperty() {
+        return comments;
     }
     
 }

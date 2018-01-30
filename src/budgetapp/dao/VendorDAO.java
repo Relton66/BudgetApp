@@ -1,5 +1,6 @@
 package budgetapp.dao;
 
+import budgetapp.model.Category;
 import budgetapp.model.Vendor;
 import budgetapp.util.DBUtil;
 import java.sql.ResultSet;
@@ -107,28 +108,30 @@ public class VendorDAO {
     }
     
     /**
-     * This method retrieves the category ID for a given vendor ID.
+     * This method retrieves the category for a given vendor ID.
      * 
      * @param vendorId - the vendor ID
-     * @return the category ID for the given vendor ID     
+     * @return the category for the given vendor ID     
      */
-    public static int findCategoryByVendorId(int vendorId) {
+    public static Category findCategoryByVendorId(int vendorId) {
         LOG.info("Attemping to retrieve the cagetory for vendor ID {}", vendorId);
-        int categoryId = 0;
-        String query = "SELECT cat.category_id FROM category cat JOIN vendor ven ON ven.category_id = cat.category_id where ven.vendor_id = ?";
+        Category category = new Category();
+        String query = "SELECT * FROM category cat JOIN vendor ven ON ven.category_id = cat.category_id where ven.vendor_id = ?";
         List<Object> parameters = new ArrayList<>();
         parameters.add(vendorId);
         try {
             ResultSet results = DBUtil.dbExecuteSelectQuery(query, parameters);            
             if(results.next()) {
-                categoryId = results.getInt("CATEGORY_ID");
-                LOG.info("Category ID {} was found", categoryId);
+                category.setCategoryId(results.getInt("CATEGORY_ID"));
+                category.setCategoryName(results.getString("CATEGORY_NAME"));
+                LOG.info("Category ID {} and name {} was found", category.getCategoryId(), 
+                        category.getCategoryName());
             } else {
                 LOG.info("Category was not found for vendor ID {}", vendorId);
             }
         } catch (SQLException | ClassNotFoundException e) {
             LOG.error("findCategoryByVendorId has failed", e);            
         }
-        return categoryId;
+        return category;
     }
 }

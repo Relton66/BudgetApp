@@ -50,6 +50,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import static javafx.scene.control.TableView.CONSTRAINED_RESIZE_POLICY;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
@@ -76,6 +77,9 @@ public class HomeController implements Initializable {
     /** The existing vendor list. */
     @FXML
     private ChoiceBox existingVendorList;
+    /** The vendor category list to show what is linked. */
+    @FXML
+    private ChoiceBox vendorCategoryList;
     /** The new vendor field. */
     @FXML
     private TextField newVendorField;
@@ -115,6 +119,9 @@ public class HomeController implements Initializable {
     /** The method list. */
     @FXML
     private ChoiceBox methodList;   
+    /** The comments box. */
+    @FXML
+    private TextArea commentArea;
     /** The active budget check box. */
     @FXML
     private CheckBox activeBudgetCheckBox;    
@@ -172,6 +179,29 @@ public class HomeController implements Initializable {
             }
         });
         
+        // This handles when the vendor list changes
+        existingVendorList.setOnAction((event) -> {
+            ObservableList<String> vendorsList = FXCollections.observableArrayList();
+            String vendorName = existingVendorList.getSelectionModel().getSelectedItem().toString();
+            if(!Constants.LIST_NONE_OPTION.equals(vendorName)) {
+                String categoryName = VendorDAO.findCategoryByVendorId(VendorDAO.findVendorByName(vendorName)
+                        .getVendorId()).getCategoryName();
+                vendorsList.add(categoryName);
+                vendorCategoryList.setItems(vendorsList);
+                vendorCategoryList.getSelectionModel().selectFirst();
+            } else {
+                vendorsList.clear();
+                vendorCategoryList.setItems(vendorsList);
+            }
+            
+        });
+        
+        // When user types in here, it's implied they aren't wanting to use the
+        // existing vendor field so change it to default.
+        newVendorField.textProperty().addListener((observable, oldValue, newValue) -> {
+            existingVendorList.getSelectionModel().selectFirst();
+        });
+        
     }
     
     /**
@@ -199,6 +229,8 @@ public class HomeController implements Initializable {
         vendorsList.addAll(VendorDAO.getExistingVendors());
         existingVendorList.setItems(vendorsList);
         existingVendorList.getSelectionModel().selectFirst();
+        // Default to disabled
+        vendorCategoryList.setDisable(true);
     }
     
     /**
@@ -318,12 +350,14 @@ public class HomeController implements Initializable {
             CommonUtil.displayMessage(statusMessage, "Amount entered has incorrect format.", false);
         } else if(transDateField.getValue() == null) {           
             CommonUtil.displayMessage(statusMessage, "Date is missing.", false);
+        } else if(commentArea.getText().length() > 100) {
+            CommonUtil.displayMessage(statusMessage, "Comments cannot be more than 100 characters.", false);
         } else if(Constants.LIST_NONE_OPTION.equalsIgnoreCase(existingVendorList.getValue().toString())) {
             if(!StringUtil.isAlphaNumeric(newVendorField.getText())) {
                 CommonUtil.displayMessage(statusMessage, "New vendor name must be alphanumeric.", false);
             } else if(newVendorField.getText().length() > 50) {
                 CommonUtil.displayMessage(statusMessage,
-                        "New vendor name must be less than 51 characters.", false);                
+                        "New vendor name cannot be more than 50 characters.", false);                
             } else if(VendorDAO.vendorNameAlreadyExists(newVendorField.getText())) {
                 CommonUtil.displayMessage(statusMessage, "Vendor already exists.", false);
             } else {
@@ -342,7 +376,7 @@ public class HomeController implements Initializable {
         Transaction transaction = CommonUtil.generateTransactionModel(StringUtil.convertFromDollarFormat(
             amountField.getText()), incomeCheckBoxField.isSelected(), Date.valueOf(transDateField.getValue()),
             selectedBudgetId, methodList, existingVendorList.getSelectionModel().getSelectedItem().toString(),
-            newVendorField.getText(), categoryList.getSelectionModel().getSelectedItem().toString());       
+            newVendorField.getText(), categoryList.getSelectionModel().getSelectedItem().toString(), commentArea.getText());       
         TransactionDAO.saveTransaction(transaction);        
         updateBalances(transaction);        
         displayMessage("Transaction successfully saved!", true);
@@ -358,7 +392,7 @@ public class HomeController implements Initializable {
         BudgetDAO.updateBudgetBalance(selectedBudgetId, transaction.getIncome(),
                 transaction.getAmount());
         // Update category budget balance
-        int categoryId = VendorDAO.findCategoryByVendorId(transaction.getVendorId());
+        int categoryId = VendorDAO.findCategoryByVendorId(transaction.getVendorId()).getCategoryId();
         CategoryBudgetDAO.updateCategoryBalance(selectedBudgetId, categoryId, transaction.getIncome(),
                 transaction.getAmount());
         // Now update the label and category budget table.
@@ -542,18 +576,23 @@ public class HomeController implements Initializable {
         amountColumn.setCellFactory(TextFieldTableCell.<TransactionTableEntry>forTableColumn());
         amountColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
         
-        TableColumn categoryColumn = new TableColumn("Category Name");
-        categoryColumn.setCellValueFactory(new PropertyValueFactory("categoryName"));
-        categoryColumn.setCellFactory(TextFieldTableCell.<TransactionTableEntry>forTableColumn());
-        categoryColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
+        TableColumn categoryNameColumn = new TableColumn("Category Name");
+        categoryNameColumn.setCellValueFactory(new PropertyValueFactory("categoryName"));
+        categoryNameColumn.setCellFactory(TextFieldTableCell.<TransactionTableEntry>forTableColumn());
+        categoryNameColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
         
         TableColumn methodColumn = new TableColumn("Method Type");
         methodColumn.setCellValueFactory(new PropertyValueFactory("methodType"));
         methodColumn.setCellFactory(TextFieldTableCell.<TransactionTableEntry>forTableColumn());
-        methodColumn.setStyle("-fx-alignment: CENTER-RIGHT;");       
+        methodColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
+        
+        TableColumn commentsColumn = new TableColumn("Comments");
+        commentsColumn.setCellValueFactory(new PropertyValueFactory("comments"));
+        commentsColumn.setCellFactory(TextFieldTableCell.<TransactionTableEntry>forTableColumn());
+        commentsColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
         
         transactionTable.getColumns()
-                .addAll(dateColumn, vendorColumn, amountColumn, categoryColumn, methodColumn);
+                .addAll(dateColumn, vendorColumn, amountColumn, categoryNameColumn, methodColumn, commentsColumn);
         transactionTable.setItems(data);
         transactionTable.setEditable(false);
         transactionTable.setColumnResizePolicy(CONSTRAINED_RESIZE_POLICY);
@@ -643,6 +682,17 @@ public class HomeController implements Initializable {
         stage.setScene(scene);
         stage.setAlwaysOnTop(true);
         stage.show();
+    }
+    
+    /**
+     * This method handles the edit category button action.
+     */
+    public void onEditCategoryBtnAction() {
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("Coming Soon!");
+        alert.setHeaderText(null);
+        alert.setContentText("This feature is not implemented yet.");
+        alert.showAndWait();
     }
     
     /**

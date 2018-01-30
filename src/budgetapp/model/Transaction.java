@@ -8,6 +8,8 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
 /**
  * The Transaction model class.
@@ -28,6 +30,8 @@ public class Transaction {
     private final IntegerProperty vendorId;
     /** The budget ID. */
     private final IntegerProperty budgetId;
+    /** The comments. */
+    private final StringProperty comments;
     
     /**
      * The constructor.
@@ -40,6 +44,7 @@ public class Transaction {
         this.vendorId = new SimpleIntegerProperty();
         this.budgetId = new SimpleIntegerProperty();
         this.methodId = new SimpleIntegerProperty();
+        this.comments = new SimpleStringProperty();
     }
 
     /**
@@ -229,5 +234,32 @@ public class Transaction {
      */
     public IntegerProperty budgetIdProperty() {
         return budgetId;
+    }
+    
+    /**
+     * Gets comments value.
+     * 
+     * @return comments value
+     */
+    public final String getComments() {
+        return comments.get();
+    }
+
+    /**
+     * Sets comments value.
+     * 
+     * @param comments - the comments value to set.
+     */
+    public final void setComments(String comments) {
+        this.comments.set(comments);
+    }
+    
+    /**
+     * Gets comments property.
+     * 
+     * @return comments property
+     */
+    public StringProperty commentsProperty() {
+        return comments;
     }
 }
