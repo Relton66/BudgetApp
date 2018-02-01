@@ -181,19 +181,20 @@ public class HomeController implements Initializable {
         
         // This handles when the vendor list changes
         existingVendorList.setOnAction((event) -> {
-            ObservableList<String> vendorsList = FXCollections.observableArrayList();
-            String vendorName = existingVendorList.getSelectionModel().getSelectedItem().toString();
-            if(!Constants.LIST_NONE_OPTION.equals(vendorName)) {
-                String categoryName = VendorDAO.findCategoryByVendorId(VendorDAO.findVendorByName(vendorName)
-                        .getVendorId()).getCategoryName();
-                vendorsList.add(categoryName);
-                vendorCategoryList.setItems(vendorsList);
-                vendorCategoryList.getSelectionModel().selectFirst();
-            } else {
-                vendorsList.clear();
-                vendorCategoryList.setItems(vendorsList);
+            if(existingVendorList.getSelectionModel().getSelectedItem() != null) {
+                ObservableList<String> vendorsList = FXCollections.observableArrayList();
+                String vendorName = existingVendorList.getSelectionModel().getSelectedItem().toString();
+                if(!Constants.LIST_NONE_OPTION.equals(vendorName)) {
+                    String categoryName = VendorDAO.findCategoryByVendorId(VendorDAO.findVendorByName(vendorName)
+                            .getVendorId()).getCategoryName();
+                    vendorsList.add(categoryName);
+                    vendorCategoryList.setItems(vendorsList);
+                    vendorCategoryList.getSelectionModel().selectFirst();
+                } else {
+                    vendorsList.clear();
+                    vendorCategoryList.setItems(vendorsList);
+                }
             }
-            
         });
         
         // When user types in here, it's implied they aren't wanting to use the
@@ -434,7 +435,6 @@ public class HomeController implements Initializable {
         incomeCheckBoxField.setSelected(false);
         transDateField.setValue(LocalDate.now());
         loadExistingVendors();
-        existingVendorList.getSelectionModel().selectFirst();
         newVendorField.setText("");
         categoryList.getSelectionModel().selectFirst();
         methodList.getSelectionModel().selectFirst();
