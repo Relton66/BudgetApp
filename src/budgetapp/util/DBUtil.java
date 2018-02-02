@@ -1,11 +1,13 @@
 package budgetapp.util;
 
+import budgetapp.Main;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 import javax.sql.rowset.CachedRowSet;
 import javax.sql.rowset.RowSetProvider;
@@ -35,15 +37,45 @@ public class DBUtil {
      */
     public static void dbConnect() throws SQLException, ClassNotFoundException {
         try {
-            Class.forName(JDBC_DRIVER);
+            // For development we need to load Oracle driver.
+            if(!Main.IS_PRODUCTION && !Main.IS_TEST) {
+                Class.forName(JDBC_DRIVER);
+            }
         } catch (ClassNotFoundException e) {
             LOG.error("Oracle JDBC Driver is missing", e);            
         }
         try {
-            conn = DriverManager.getConnection(CONN_STR);
+            if(Main.IS_PRODUCTION) {
+                // Try to connect to prod embedded DB
+                conn = DriverManager.getConnection("jdbc:derby:database/budgetAppDB");
+                LOG.debug("Connected to database budgetAppDB successfully!");
+            } else if(Main.IS_TEST) {
+                // Try to connect to test embedded DB
+                conn = DriverManager.getConnection("jdbc:derby:database/budgetAppDBTest");
+                LOG.debug("Connected to database budgetAppDBTest successfully!");
+            } else {
+                // Try to connect to Oracle dev DB
+                conn = DriverManager.getConnection(CONN_STR);
+            }
         } catch (SQLException e) {
-            LOG.debug("Oracle JDBC Driver Registered!");
-            LOG.error("Connection Failed! Check output console", e);
+            if (e.getSQLState().equals("XJ004")){
+                // DB doesn't exist, have to recreate it
+                if(Main.IS_PRODUCTION) {
+                    conn = DriverManager.getConnection("jdbc:derby:database/budgetAppDB;create=true");
+                } else {
+                    conn = DriverManager.getConnection("jdbc:derby:database/budgetAppDBTest;create=true");
+                }
+                LOG.debug("Database created successfully!");
+                try {
+                    createDerbyTables();
+                    LOG.debug("Tables created successfully!");
+                } catch (SQLException ex) {
+                    LOG.error("Could not create database!", ex);
+                }
+            } else {
+                LOG.debug("Oracle JDBC Driver Registered!");
+                LOG.error("Connection Failed! Check output console", e);
+            }
         }
     }
     
@@ -176,5 +208,73 @@ public class DBUtil {
             }
         }
         return stmt;
+    }
+    
+    /**
+     * This method creates the Derby DB tables and sequences.
+     * 
+     * @throws SQLException - the SQL exception
+     */
+    private static void createDerbyTables() throws SQLException {        
+        try {
+            // Create budget table
+            executeQuery("CREATE TABLE budget (budget_id INT NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY "
+                + "(START WITH 1, INCREMENT BY 1), budget_name VARCHAR(50), start_date DATE, end_date DATE, "
+                + "start_balance DECIMAL(15,2), current_balance DECIMAL(15,2), active BOOLEAN)");
+                     
+            // Create category table            
+            executeQuery("CREATE TABLE category (category_id INT NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY "
+                + "(START WITH 1, INCREMENT BY 1), category_name VARCHAR(50))");
+                        
+            // Create vendor table            
+            executeQuery("CREATE TABLE vendor (vendor_id INT NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY "
+                + "(START WITH 1, INCREMENT BY 1), vendor_name VARCHAR(50), category_id INT, CONSTRAINT "
+                + "fk_vendor_category_id FOREIGN KEY (category_id) REFERENCES category(category_id))");
+            
+            // Create category budget table            
+            executeQuery("CREATE TABLE category_budget (category_budget_id INT NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY "
+                + "(START WITH 1, INCREMENT BY 1), budget_id INT, category_id INT, start_balance DECIMAL(15,2), "
+                + "current_balance DECIMAL(15,2), CONSTRAINT fk_category_budget_budget_id FOREIGN KEY (budget_id) REFERENCES "
+                + "budget(budget_id), CONSTRAINT fk_category_budget_category_id FOREIGN KEY (category_id) REFERENCES "
+                + "category(category_id))");
+            
+            // Create method table
+            executeQuery("CREATE TABLE method (method_id INT NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY "
+                + "(START WITH 1, INCREMENT BY 1), method_type VARCHAR(50), active BOOLEAN)");
+            
+            // Create transactions table
+            executeQuery("CREATE TABLE transactions (transaction_id INT NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY "
+                + "(START WITH 1, INCREMENT BY 1), amount DECIMAL(15,2), "
+                + "income BOOLEAN, trans_date DATE, method_id INT, vendor_id INT, budget_id INT, comments VARCHAR(100), "
+                + "CONSTRAINT fk_transaction_vendor_id FOREIGN KEY (vendor_id) REFERENCES vendor(vendor_id), CONSTRAINT "
+                + "fk_transaction_budget_id FOREIGN KEY (budget_id) REFERENCES budget(budget_id), CONSTRAINT "
+                + "fk_transaction_method_id FOREIGN KEY (method_id) REFERENCES method(method_id))");            
+                     
+        } catch (SQLException e) {
+            LOG.error("Problem occurred at createDerbyTables", e);
+        }
+    }
+    
+    /**
+     * This method just executes a statement.
+     * 
+     * @param query - the query to execute
+     * @throws SQLException - the SQL exception
+     */
+    private static void executeQuery(String query) throws SQLException {
+        Statement stmt = null;
+        try {
+            //stmt = conn.prepareStatement(query);
+            stmt = conn.createStatement();
+            LOG.debug("Query to execute is: " + query);
+            stmt.execute(query);
+            LOG.debug("Query successful.");
+        } catch (SQLException e) {
+            LOG.error("Problem occurred at executeQuery", e);
+        } finally {
+            if (stmt != null) {
+                stmt.close();
+            }
+        }
     }
 }

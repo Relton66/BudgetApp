@@ -8,6 +8,7 @@ import budgetapp.model.Category;
 import budgetapp.model.CategoryBudgetTableEntry;
 import budgetapp.util.CommonUtil;
 import budgetapp.util.StringUtil;
+import static budgetapp.util.StringUtil.convertFromDollarFormat;
 import java.net.URL;
 import java.sql.Date;
 import java.util.ArrayList;
@@ -180,23 +181,38 @@ public class BudgetController implements Initializable {
      *
      * @param t - the CellEditEvent instance
      */
-    public void onBudgetAmountEditCommit(CellEditEvent<CategoryBudgetTableEntry, String> t) {
-        ((CategoryBudgetTableEntry) t.getTableView().getItems().get(
-            t.getTablePosition().getRow())
-            ).setBudgetStarting(StringUtil.convertToDollarFormat(t.getNewValue()));
-        calculateBudgetTotal();
+    public void onBudgetAmountEditCommit(CellEditEvent<CategoryBudgetTableEntry, String> t) {        
+        String newValue = t.getNewValue();
+        if(StringUtil.isValidDollarAmount(newValue)) {
+            newValue = Double.toString(StringUtil.convertFromDollarFormat(newValue));
+            newValue = StringUtil.convertToDollarFormat(newValue);
+            ((CategoryBudgetTableEntry) t.getTableView().getItems().get(
+                t.getTablePosition().getRow())
+                ).setBudgetStarting(newValue);
+            calculateBudgetTotal();
+        } else {
+            CommonUtil.displayMessage(budgetStatusMessage, "Budget amount is invalid.", false);  
+        }       
     }
             
     /**
      * This method handles the Add Category button action.
      */
     public void onAddCategory() {
+        resetStatusMessages();
         if(categoryInputIsValid()) {
             addToCategoryTable(categoryField.getText(), budgetAmountField.getText());                     
             categoryField.clear();
             budgetAmountField.clear();            
-            categoryStatusMessage.setText("");
         }
+    }
+    
+    /**
+     * This method clears the status messages.
+     */
+    private void resetStatusMessages() {
+        categoryStatusMessage.setText("");
+        budgetStatusMessage.setText("");
     }
     
     /**
@@ -218,15 +234,17 @@ public class BudgetController implements Initializable {
      */
     private void calculateBudgetTotal() {
         budgetTotalAmount = 0;        
-        for(CategoryBudgetTableEntry categoryBudget : categoryTableList) {
-            budgetTotalAmount += StringUtil.convertFromDollarFormat(categoryBudget.getBudgetStarting());
+        if(StringUtil.isValidDollarAmount(startBalance.getText())) {
+            for(CategoryBudgetTableEntry categoryBudget : categoryTableList) {
+                budgetTotalAmount += StringUtil.convertFromDollarFormat(categoryBudget.getBudgetStarting());
+            }
+            if(budgetTotalAmount >  StringUtil.convertFromDollarFormat(startBalance.getText())) {
+                budgetTotalField.setStyle("-fx-text-inner-color: red;");
+            } else {
+                budgetTotalField.setStyle("-fx-text-inner-color: green;");
+            }
+            budgetTotalField.setText(StringUtil.convertToDollarFormat(Double.toString(budgetTotalAmount)));  
         }
-        if(budgetTotalAmount >  StringUtil.convertFromDollarFormat(startBalance.getText())) {
-            budgetTotalField.setStyle("-fx-text-inner-color: red;");
-        } else {
-            budgetTotalField.setStyle("-fx-text-inner-color: green;");
-        }
-        budgetTotalField.setText(StringUtil.convertToDollarFormat(Double.toString(budgetTotalAmount)));        
     }
     
     /**
@@ -311,9 +329,9 @@ public class BudgetController implements Initializable {
         for(CategoryBudgetTableEntry currentEntry : categoryTableList) {
             boolean needToAdd = true;
             for(CategoryBudgetTableEntry existingEntry : originalCategoryList) {
-                if(currentEntry.getCategoryName().equalsIgnoreCase(existingEntry.getCategoryName()) ||
-                        (currentEntry.getCategoryId() != null &&
-                        currentEntry.getCategoryId().equals(existingEntry.getCategoryId()))) {
+                if(currentEntry.getCategoryName().equalsIgnoreCase(existingEntry.getCategoryName())) {// ||
+                     //   (currentEntry.getCategoryId() != null &&
+                     //   currentEntry.getCategoryId().equals(existingEntry.getCategoryId()))) {
                     needToAdd = false;
                     updateBalances(budgetId, currentEntry.getCategoryName(),
                         currentEntry.getBudgetStarting(), existingEntry.getBudgetStarting());
@@ -365,12 +383,12 @@ public class BudgetController implements Initializable {
             if(!existingCategories.contains(entry.getCategoryName())) {
                 // If the ID is not present in entry, it's a brand new category
                 // Else the category name was renamed
-                if(entry.getCategoryId() == null) {
-                    CategoryDAO.saveCategory(entry.getCategoryName());
-                } else {
-                    CategoryDAO.updateCategoryName(entry.getCategoryName(), 
-                        Integer.parseInt(entry.getCategoryId()));
-                }
+                //if(entry.getCategoryId() == null) {
+                CategoryDAO.saveCategory(entry.getCategoryName());
+                //} //else {
+                  ////  CategoryDAO.updateCategoryName(entry.getCategoryName(), 
+                  //      Integer.parseInt(entry.getCategoryId()));
+               // }
             }
         }
         // Need to loop through original and if not in current, delete it
@@ -393,10 +411,10 @@ public class BudgetController implements Initializable {
      * This method handles the Save button action.     
      */
     public void onSaveAction() {
+        resetStatusMessages();
         if(inputIsValid()) {
             saveBudget();
-            CommonUtil.displayMessage(budgetStatusMessage, "Budget saved!", true);
-            categoryStatusMessage.setText("");            
+            CommonUtil.displayMessage(budgetStatusMessage, "Budget saved!", true);          
         }
     }
     /** 

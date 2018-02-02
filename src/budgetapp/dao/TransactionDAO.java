@@ -1,11 +1,14 @@
 package budgetapp.dao;
 
+import budgetapp.Main;
 import budgetapp.model.Transaction;
 import budgetapp.model.TransactionTableEntry;
 import budgetapp.util.DBUtil;
 import budgetapp.util.StringUtil;
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
@@ -29,11 +32,23 @@ public class TransactionDAO {
         LOG.info("Attempting to save transaction");
         int newId = 0;
         boolean noMethodId = transaction.getMethodId() == 0;
-        String query;        
-        if(noMethodId) {
-            query = "INSERT INTO transaction (transaction_id, amount, income, trans_date, vendor_id, comments, budget_id) values (transaction_seq.nextval, ?, ?, ?, ?, ?, ?)";    
+        String query;
+        if(Main.USE_DERBY) {
+            if(noMethodId) {
+                query = "INSERT INTO transactions (amount, income, trans_date, vendor_id, comments, "
+                    + "budget_id) values (?, ?, ?, ?, ?, ?)";    
+            } else {
+                query = "INSERT INTO transactions (amount, income, trans_date, vendor_id, comments, "
+                    + "budget_id, method_id) values (?, ?, ?, ?, ?, ?, ?)";    
+            }
         } else {
-            query = "INSERT INTO transaction (transaction_id, amount, income, trans_date, vendor_id, comments, budget_id, method_id) values (transaction_seq.nextval, ?, ?, ?, ?, ?, ?, ?)";    
+            if(noMethodId) {
+                query = "INSERT INTO transactions (transaction_id, amount, income, trans_date, vendor_id, "
+                    + "comments, budget_id) values (transaction_seq.nextval, ?, ?, ?, ?, ?, ?)";    
+            } else {
+                query = "INSERT INTO transactions (transaction_id, amount, income, trans_date, vendor_id, "
+                    + "comments, budget_id, method_id) values (transaction_seq.nextval, ?, ?, ?, ?, ?, ?, ?)";    
+            }
         }
         List<Object> parameters = new ArrayList<>();
         parameters.add(transaction.getAmount());
@@ -65,10 +80,11 @@ public class TransactionDAO {
     public static List<TransactionTableEntry> getTransactionsForTable(int budgetId, int categoryId, boolean perCategory) {
         LOG.info("Attempting to retrieve all transactions for budget ID {}, category ID {}, perCategory is {}", budgetId, categoryId, perCategory);
         List<TransactionTableEntry> transactionList = new ArrayList<>();
+        SimpleDateFormat format = new SimpleDateFormat("MMM dd yyyy");
         List<Object> parameters = new ArrayList<>();
         parameters.add(budgetId);
-        String query = "SELECT transaction_id, TO_CHAR(trans_date, 'Mon-DD-YYYY') AS trans_date, vendor_name, amount, (CASE WHEN income = 1 THEN 'YES' ELSE 'NO' END) AS income, "
-                + "category_name, method_type, comments FROM transaction tran JOIN vendor ven ON tran.vendor_id = ven.vendor_id JOIN category cat "
+        String query = "SELECT transaction_id, trans_date, vendor_name, amount, (CASE WHEN income = '1' THEN 'YES' ELSE 'NO' END) AS income, "
+                + "category_name, method_type, comments FROM transactions tran JOIN vendor ven ON tran.vendor_id = ven.vendor_id JOIN category cat "
                 + "ON ven.category_id = cat.category_id LEFT OUTER JOIN method met ON tran.method_id = met.method_id "
                 + "WHERE tran.budget_id = ? ";
         if(perCategory) {
@@ -86,7 +102,7 @@ public class TransactionDAO {
                     convertedAmount = "-" + convertedAmount;
                 }                
                 TransactionTableEntry transTableEntry = new TransactionTableEntry(results.getString("TRANSACTION_ID"),
-                    results.getString("TRANS_DATE"), results.getString("VENDOR_NAME"), convertedAmount,
+                    format.format(results.getDate("TRANS_DATE")), results.getString("VENDOR_NAME"), convertedAmount,
                     results.getString("INCOME"), results.getString("CATEGORY_NAME"), results.getString("METHOD_TYPE"),
                     results.getString("COMMENTS"));
                 transactionList.add(transTableEntry);
@@ -105,7 +121,7 @@ public class TransactionDAO {
      */
     public static Transaction getTransaction(int transactionId) {
         LOG.info("Attempting to find transaction for ID {}", transactionId);
-        String query = "SELECT * FROM transaction WHERE transaction_id = ?";
+        String query = "SELECT * FROM transactions WHERE transaction_id = ?";
         Transaction transaction = new Transaction();
         List<Object> parameters = new ArrayList<>();
         parameters.add(transactionId);
@@ -134,7 +150,7 @@ public class TransactionDAO {
      */
     public static void deleteTransaction(int transactionId) {
         LOG.info("Attempting to delete transaction ID {}", transactionId);
-        String query = "DELETE FROM transaction WHERE transaction_id = ?";
+        String query = "DELETE FROM transactions WHERE transaction_id = ?";
         List<Object> parameters = new ArrayList<>();
         parameters.add(transactionId);      
         try {
@@ -153,7 +169,7 @@ public class TransactionDAO {
     public static void updateTransaction(Transaction transaction) {
         LOG.info("Attempting to update transaction ID {}", transaction.getTransactionId());
         boolean methodExists = transaction.getMethodId() != 0;
-        String query = "UPDATE transaction SET amount = ?, income = ?, trans_date = ?, vendor_id = ?, comments = ?";
+        String query = "UPDATE transactions SET amount = ?, income = ?, trans_date = ?, vendor_id = ?, comments = ?";
         if(methodExists) {
             query += ", method_id = ?";    
         }

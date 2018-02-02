@@ -1,5 +1,6 @@
 package budgetapp.dao;
 
+import budgetapp.Main;
 import budgetapp.model.MethodTableEntry;
 import budgetapp.util.DBUtil;
 import java.sql.ResultSet;
@@ -72,7 +73,7 @@ public class MethodDAO {
     public static List<String> getActiveMethodTypes() {
         LOG.info("Attempting to get all active method types");
         List<String> methodTypesList = new ArrayList<>();
-        String query = "SELECT method_type FROM method WHERE active = 1 ORDER BY method_type";
+        String query = "SELECT method_type FROM method WHERE active = '1' ORDER BY method_type";
         List<Object> parameters = new ArrayList<>();
         try {
             ResultSet results = DBUtil.dbExecuteSelectQuery(query, parameters);
@@ -93,7 +94,12 @@ public class MethodDAO {
      */
     public static void saveMethod(MethodTableEntry methodEntry) {
         LOG.info("Attempting to save method {}", methodEntry.getMethodType());
-        String query = "INSERT INTO method (method_id, method_type, active) values (method_seq.nextval, ?, ?)";
+        String query;
+        if(Main.USE_DERBY) {
+            query = "INSERT INTO method (method_type, active) VALUES (?, ?)";
+        } else {
+            query = "INSERT INTO method (method_id, method_type, active) VALUES (method_seq.nextval, ?, ?)";
+        }
         int newId = 0;
         List<Object> parameters = new ArrayList<>();
         parameters.add(methodEntry.getMethodType());

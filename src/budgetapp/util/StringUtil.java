@@ -45,7 +45,7 @@ public class StringUtil {
      * @return the string in the format X.XX
      */
     public static String convertToDollarFormat(String str) {
-        String convertedStr = String.format("%.2f", convertFromDollarFormat(str));
+        String convertedStr = String.format("%.2f", Double.parseDouble(str));
         if(convertedStr.startsWith("-")) {
             convertedStr = convertedStr.replace("-", "-$");
         } else {

@@ -1,5 +1,6 @@
 package budgetapp.dao;
 
+import budgetapp.Main;
 import budgetapp.model.CategoryBudgetTableEntry;
 import budgetapp.util.DBUtil;
 import budgetapp.util.StringUtil;
@@ -29,8 +30,14 @@ public class CategoryBudgetDAO {
     public static int saveCategoryBudget(int budgetId, int categoryId, double startBalance) {
         LOG.info("Attempting to save category budget for budget ID {} and category ID {}", budgetId, categoryId);
         int newId = 0;
-        String query = "INSERT INTO category_budget (category_budget_id, budget_id, category_id, start_balance, current_balance)"
+        String query;
+        if(Main.USE_DERBY) {
+            query = "INSERT INTO category_budget (budget_id, category_id, start_balance, current_balance)"
+                + " values (?, ?, ?, ?)";
+        } else {
+            query = "INSERT INTO category_budget (category_budget_id, budget_id, category_id, start_balance, current_balance)"
                 + " values (category_budget_seq.nextval, ?, ?, ?, ?)";
+        }
         List<Object> parameters = new ArrayList<>();
         parameters.add(budgetId);
         parameters.add(categoryId);

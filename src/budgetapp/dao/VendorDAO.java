@@ -1,5 +1,6 @@
 package budgetapp.dao;
 
+import budgetapp.Main;
 import budgetapp.model.Category;
 import budgetapp.model.Vendor;
 import budgetapp.util.DBUtil;
@@ -59,7 +60,12 @@ public class VendorDAO {
     public static int saveVendor(String vendorName, String categoryName) {
         LOG.info("Attempting to save vendor {} and category {}", vendorName, categoryName);
         int vendorId = 0;
-        String query = "INSERT INTO vendor (vendor_id, vendor_name, category_id) VALUES (vendor_seq.nextval, ?, ?)";
+        String query;
+        if(Main.USE_DERBY) {
+            query = "INSERT INTO vendor (vendor_name, category_id) VALUES (?, ?)";
+        } else {
+            query = "INSERT INTO vendor (vendor_id, vendor_name, category_id) VALUES (vendor_seq.nextval, ?, ?)";
+        }
         List<Object> parameters = new ArrayList<>();
         parameters.add(vendorName);
         parameters.add(CategoryDAO.findCategoryByName(categoryName).getCategoryId());
@@ -116,7 +122,7 @@ public class VendorDAO {
     public static Category findCategoryByVendorId(int vendorId) {
         LOG.info("Attemping to retrieve the cagetory for vendor ID {}", vendorId);
         Category category = new Category();
-        String query = "SELECT * FROM category cat JOIN vendor ven ON ven.category_id = cat.category_id where ven.vendor_id = ?";
+        String query = "SELECT * FROM category cat JOIN vendor ven ON ven.category_id = cat.category_id WHERE ven.vendor_id = ?";
         List<Object> parameters = new ArrayList<>();
         parameters.add(vendorId);
         try {

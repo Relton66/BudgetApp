@@ -279,7 +279,7 @@ public class HomeController implements Initializable {
         ObservableList<String> existingBudgetNamesList = FXCollections.observableArrayList();
         int activeBudgetIndex = 0;
         // If we're coming from edit, need to store the currently selected budget
-        if(fromEdit) {
+        if(fromEdit && budgetList.getSelectionModel().getSelectedItem() != null) {
             activeBudgetIndex = budgetList.getSelectionModel().getSelectedIndex();
         }
         // If no budgets exist, no need to set anything else up

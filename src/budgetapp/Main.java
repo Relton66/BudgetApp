@@ -18,9 +18,15 @@ public class Main extends Application {
     /** The primary stage. */
     private Stage primaryStage;
     /** The root layout. */
-    private BorderPane homeLayout;
+    private BorderPane homeLayout;    
     /** The logger. */
-    private static final Logger LOG = LoggerFactory.getLogger(Main.class); 
+    private static final Logger LOG = LoggerFactory.getLogger(Main.class);
+    /** The production environment flag. */
+    public static boolean IS_PRODUCTION = false;
+    /** The test environment flag. */
+    public static boolean IS_TEST = false;
+    /** The use Derby DB flag. */
+    public static boolean USE_DERBY = true;
     
     /**
      * The default start method.
@@ -30,7 +36,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
-        this.primaryStage.setTitle("Budget App");       
+        this.primaryStage.setTitle("Budget App");
         initHomeLayout();
     }
 
@@ -51,11 +57,17 @@ public class Main extends Application {
     }
 
     /**
-     * This default main method.
+     * This is the default main method.  It checks the arguments to determine
+     * the environment we are in (i.e. which database to use).
      * 
      * @param args - arguments
      */
     public static void main(String[] args) {
+        if(args.length > 0) {
+            IS_PRODUCTION = "PROD".equals(args[0]);
+            IS_TEST = "TEST".equals(args[0]);
+        }
+        USE_DERBY = IS_PRODUCTION || IS_TEST;
         launch(args);
     }
     

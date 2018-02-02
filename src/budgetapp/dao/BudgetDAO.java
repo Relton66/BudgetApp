@@ -1,5 +1,6 @@
 package budgetapp.dao;
 
+import budgetapp.Main;
 import budgetapp.model.Budget;
 import budgetapp.util.DBUtil;
 import java.sql.ResultSet;
@@ -28,8 +29,14 @@ public class BudgetDAO {
     public static int saveNewBudget(Budget budget) {
         LOG.info("Attempting to save the budget");
         int newId = 0;
-        String query = "INSERT INTO budget (budget_id, budget_name, start_date, end_date, start_balance, "
+        String query;
+        if(Main.USE_DERBY) {
+            query = "INSERT INTO budget (budget_name, start_date, end_date, start_balance, "
+                + "current_balance) VALUES (?, ?, ?, ?, ?)";
+        } else {
+            query = "INSERT INTO budget (budget_id, budget_name, start_date, end_date, start_balance, "
                 + "current_balance) VALUES (budget_seq.nextval, ?, ?, ?, ?, ?)";
+        }
         List<Object> parameters = new ArrayList<>();
         parameters.add(budget.getBudgetName());
         parameters.add(budget.getStartDate());
@@ -169,7 +176,7 @@ public class BudgetDAO {
      */
     public static void clearActiveBudget() {
         LOG.info("Attempting to clear active fields for all budgets)");
-        String query = "UPDATE budget SET ACTIVE = 0";
+        String query = "UPDATE budget SET ACTIVE = false";
         List<Object> parameters = new ArrayList<>();
         try {
             DBUtil.dbExecuteUpdate(query, parameters, "");

@@ -1,5 +1,6 @@
 package budgetapp.dao;
 
+import budgetapp.Main;
 import budgetapp.model.Category;
 import budgetapp.util.DBUtil;
 import java.sql.ResultSet;
@@ -55,7 +56,12 @@ public class CategoryDAO {
     public static int saveCategory(String categoryName) {
         LOG.info("Attempting to save category {}", categoryName);
         int newId = 0;
-        String query = "INSERT INTO category (category_id, category_name) VALUES (category_seq.nextval, ?)";
+        String query;
+        if(Main.USE_DERBY) {
+            query = "INSERT INTO category (category_name) VALUES (?)";
+        } else {
+            query = "INSERT INTO category (category_id, category_name) VALUES (category_seq.nextval, ?)";
+        }
         List<Object> parameters = new ArrayList<>();
         parameters.add(categoryName);
         try {
@@ -98,8 +104,8 @@ public class CategoryDAO {
     public static List<Category> getCategoriesByBudgetId(int budgetId) {
         LOG.info("Attempting to retrieve categories for budget ID {}", budgetId);
         List<Category> categoryList = new ArrayList<>();
-        String query = "select * from category cat where exists (select 1 from category_budget catbud "
-                + "where catbud.category_id = cat.category_id and catbud.budget_id = ?) ORDER BY cat.category_name";
+        String query = "SELECT * FROM category cat WHERE EXISTS (SELECT 1 FROM category_budget catbud "
+                + "WHERE catbud.category_id = cat.category_id AND catbud.budget_id = ?) ORDER BY cat.category_name";
         List<Object> parameters = new ArrayList<>();
         parameters.add(budgetId);
         try {
@@ -125,7 +131,7 @@ public class CategoryDAO {
      */
     public static void updateCategoryName(String categoryName, int categoryId) {
         LOG.info("Attempting to update category ID {}", categoryId);        
-        String query = "UPDATE category set category_name = ? WHERE category_id = ?";
+        String query = "UPDATE category SET category_name = ? WHERE category_id = ?";
         List<Object> parameters = new ArrayList<>();
         parameters.add(categoryName);
         parameters.add(categoryId);
