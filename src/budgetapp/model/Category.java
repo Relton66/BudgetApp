@@ -1,6 +1,8 @@
 package budgetapp.model;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -14,6 +16,8 @@ public class Category {
     private final IntegerProperty categoryId;
     /** The category name. */
     private final StringProperty categoryName;
+    /** The active flag. */
+    private final BooleanProperty active;
     
     /**
      * The constructor.
@@ -21,6 +25,7 @@ public class Category {
     public Category() {
         this.categoryId = new SimpleIntegerProperty();
         this.categoryName = new SimpleStringProperty();
+        this.active = new SimpleBooleanProperty();
     }
     
     /**
@@ -75,5 +80,32 @@ public class Category {
      */
     public StringProperty categoryNameProperty() {
         return categoryName;
+    }
+    
+    /**
+     * Gets active value.
+     * 
+     * @return active value
+     */
+    public final boolean getActive() {
+        return active.get();
+    }
+
+    /**
+     * Sets active value.
+     * 
+     * @param active - the active value to set.
+     */
+    public final void setActive(boolean active) {
+        this.active.set(active);
+    }
+    
+    /**
+     * Gets active property.
+     * 
+     * @return active property
+     */
+    public BooleanProperty activeProperty() {
+        return active;
     }
 }

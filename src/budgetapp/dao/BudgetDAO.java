@@ -95,7 +95,7 @@ public class BudgetDAO {
                 budget.setEndDate(results.getDate("END_DATE"));
                 budget.setStartBalance(results.getDouble("START_BALANCE"));
                 budget.setCurrentBalance(results.getDouble("CURRENT_BALANCE"));
-                budget.setActive(results.getBoolean("ACTIVE"));
+                budget.setCurrentFlag(results.getBoolean("CURRENT_FLAG"));
                 existingBudgetsList.add(budget);
             }
             LOG.info("Retrieved all budgets successfully");
@@ -152,37 +152,42 @@ public class BudgetDAO {
     }
     
     /**
-     * This method updates the active flag for a budget.
+     * This method updates the currentFlag for a budget.
      * 
      * @param budgetId - the budget ID
-     * @param activeFlag - the active value     
+     * @param currentFlag - the currentFlag value     
      */
-    public static void updateActiveBudget(int budgetId, boolean activeFlag) {
-        LOG.info("Attempting to update active field for budget ID {}", budgetId);
-        String query = "UPDATE budget SET ACTIVE = ? WHERE budget_id = ?";
+    public static void updateCurrentFlagBudget(int budgetId, boolean currentFlag) {
+        LOG.info("Attempting to update currentFlag field for budget ID {}", budgetId);
+        String query = "UPDATE budget SET CURRENT_FLAG = ? WHERE budget_id = ?";
         List<Object> parameters = new ArrayList<>();
-        parameters.add(activeFlag);
+        parameters.add(currentFlag);
         parameters.add(budgetId);
         try {
             DBUtil.dbExecuteUpdate(query, parameters, "");
-            LOG.info("Active budget updated successfully");
+            LOG.info("CurrentFlag budget updated successfully");
         } catch (SQLException | ClassNotFoundException e) {
-            LOG.error("updateActiveBudget has failed", e);            
+            LOG.error("updateCurrentFlagBudget has failed", e);            
         }       
     }
     
     /**
-     * This method clears the active flag for all budgets.     
+     * This method clears the currentFlag for all budgets.     
      */
-    public static void clearActiveBudget() {
-        LOG.info("Attempting to clear active fields for all budgets)");
-        String query = "UPDATE budget SET ACTIVE = false";
+    public static void clearCurrentFlagBudget() {
+        LOG.info("Attempting to clear currentFlag fields for all budgets)");
+        String query;
+        if(Main.USE_DERBY) {
+            query = "UPDATE budget SET CURRENT_FLAG = false";
+        } else {
+            query = "UPDATE budget SET CURRENT_FLAG = '0'";
+        }
         List<Object> parameters = new ArrayList<>();
         try {
             DBUtil.dbExecuteUpdate(query, parameters, "");
-            LOG.info("Active budgets cleared successfully");
+            LOG.info("CurrentFlag budgets cleared successfully");
         } catch (SQLException | ClassNotFoundException e) {
-            LOG.error("clearActiveBudget has failed", e);            
+            LOG.error("clearCurrentFlagBudget has failed", e);            
         }       
     }
     
@@ -280,7 +285,7 @@ public class BudgetDAO {
                 budget.setEndDate(results.getDate("END_DATE"));
                 budget.setStartBalance(results.getDouble("START_BALANCE"));
                 budget.setCurrentBalance(results.getDouble("CURRENT_BALANCE"));
-                budget.setActive(results.getBoolean("ACTIVE"));
+                budget.setCurrentFlag(results.getBoolean("CURRENT_FLAG"));
             }
             LOG.info("Retrieved budget successfully");
         } catch (SQLException | ClassNotFoundException e) {

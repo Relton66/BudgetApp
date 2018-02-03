@@ -220,15 +220,15 @@ public class DBUtil {
             // Create budget table
             executeQuery("CREATE TABLE budget (budget_id INT NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY "
                 + "(START WITH 1, INCREMENT BY 1), budget_name VARCHAR(50), start_date DATE, end_date DATE, "
-                + "start_balance DECIMAL(15,2), current_balance DECIMAL(15,2), active BOOLEAN)");
+                + "start_balance DECIMAL(15,2), current_balance DECIMAL(15,2), current_flag BOOLEAN)");
                      
             // Create category table            
             executeQuery("CREATE TABLE category (category_id INT NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY "
-                + "(START WITH 1, INCREMENT BY 1), category_name VARCHAR(50))");
+                + "(START WITH 1, INCREMENT BY 1), category_name VARCHAR(50), active BOOLEAN)");
                         
             // Create vendor table            
             executeQuery("CREATE TABLE vendor (vendor_id INT NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY "
-                + "(START WITH 1, INCREMENT BY 1), vendor_name VARCHAR(50), category_id INT, CONSTRAINT "
+                + "(START WITH 1, INCREMENT BY 1), vendor_name VARCHAR(50), category_id INT, active BOOLEAN, CONSTRAINT "
                 + "fk_vendor_category_id FOREIGN KEY (category_id) REFERENCES category(category_id))");
             
             // Create category budget table            

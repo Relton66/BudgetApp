@@ -29,7 +29,7 @@ public class Budget {
     /** The budget current balance. */
     private final DoubleProperty currentBalance;
     /** The active flag. */
-    private final BooleanProperty active;
+    private final BooleanProperty currentFlag;
     
     /**
      * The constructor.
@@ -41,7 +41,7 @@ public class Budget {
         this.endDate = new SimpleObjectProperty<>();
         this.startBalance = new SimpleDoubleProperty();
         this.currentBalance = new SimpleDoubleProperty();
-        this.active = new SimpleBooleanProperty();
+        this.currentFlag = new SimpleBooleanProperty();
     }    
     
     /**
@@ -207,29 +207,29 @@ public class Budget {
     }
     
     /**
-     * Gets active value.
+     * Gets currentFlag value.
      * 
-     * @return active value
+     * @return currentFlag value
      */
-    public final boolean getActive() {
-        return active.get();
+    public final boolean getCurrentFlag() {
+        return currentFlag.get();
     }
 
     /**
-     * Sets active value.
+     * Sets currentFlag value.
      * 
-     * @param active - the active value to set.
+     * @param currentFlag - the currentFlag value to set.
      */
-    public final void setActive(boolean active) {
-        this.active.set(active);
+    public final void setCurrentFlag(boolean currentFlag) {
+        this.currentFlag.set(currentFlag);
     }
     
     /**
-     * Gets active property.
+     * Gets currentFlag property.
      * 
-     * @return active property
+     * @return currentFlag property
      */
-    public BooleanProperty activeProperty() {
-        return active;
+    public BooleanProperty currentFlagProperty() {
+        return currentFlag;
     }
 }

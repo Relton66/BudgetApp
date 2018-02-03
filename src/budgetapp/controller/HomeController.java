@@ -124,7 +124,7 @@ public class HomeController implements Initializable {
     private TextArea commentArea;
     /** The active budget check box. */
     @FXML
-    private CheckBox activeBudgetCheckBox;    
+    private CheckBox currentBudgetCheckBox;    
     /** The existing budget list. */
     private List<Budget> existingBudgetList = new ArrayList<>();    
     /** The selected budget ID. */
@@ -146,6 +146,8 @@ public class HomeController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {        
         loadExistingVendors();
+        // Default to disabled
+        vendorCategoryList.setDisable(true);
         loadActiveMethodTypes();
         boolean budgetsExist = loadExistingBudgets(false);
         if(budgetsExist) {
@@ -164,7 +166,7 @@ public class HomeController implements Initializable {
         // This handles the action when budget list changes
         budgetList.setOnAction((event) -> {
             if(budgetList.getSelectionModel().getSelectedItem() != null) {
-                activeBudgetCheckBox.setSelected(false); 
+                currentBudgetCheckBox.setSelected(false); 
                 String newBudgetName = budgetList.getSelectionModel().getSelectedItem().toString();
                 selectedBudgetId = getSelectedBudgetId(newBudgetName);
                 // Now we need to find the selected budget model and get balances
@@ -206,6 +208,13 @@ public class HomeController implements Initializable {
     }
     
     /**
+     * This method calls the common method to load existing vendors.
+     */
+    public void loadExistingVendors() {
+        CommonUtil.loadExistingVendors(existingVendorList, true);
+    }
+    
+    /**
      * This method handles the submit button action.
      */
     public void onSubmitAction() {
@@ -219,19 +228,6 @@ public class HomeController implements Initializable {
      */
     public void onResetAction() {
         resetFields(true);        
-    }
-    
-    /**
-     * This method loads the existing vendors.    
-     */    
-    public void loadExistingVendors() {
-        ObservableList<String> vendorsList = FXCollections.observableArrayList();
-        vendorsList.add(Constants.LIST_NONE_OPTION);
-        vendorsList.addAll(VendorDAO.getExistingVendors());
-        existingVendorList.setItems(vendorsList);
-        existingVendorList.getSelectionModel().selectFirst();
-        // Default to disabled
-        vendorCategoryList.setDisable(true);
     }
     
     /**
@@ -268,7 +264,7 @@ public class HomeController implements Initializable {
     }
     
     /**
-     * This method loads the existing budgets and selects the active one.
+     * This method loads the existing budgets and selects the current one.
      * 
      * @param fromEdit - true if we're coming from edit budget
      * @return true if there are budgets     
@@ -277,32 +273,32 @@ public class HomeController implements Initializable {
         existingBudgetList = BudgetDAO.getExistingBudgets();
         // We only need to store the names for the choicebox, so we build a new list
         ObservableList<String> existingBudgetNamesList = FXCollections.observableArrayList();
-        int activeBudgetIndex = 0;
+        int currentBudgetIndex = 0;
         // If we're coming from edit, need to store the currently selected budget
         if(fromEdit && budgetList.getSelectionModel().getSelectedItem() != null) {
-            activeBudgetIndex = budgetList.getSelectionModel().getSelectedIndex();
+            currentBudgetIndex = budgetList.getSelectionModel().getSelectedIndex();
         }
         // If no budgets exist, no need to set anything else up
         if(!existingBudgetList.isEmpty()) {
             for(int i=0; i< existingBudgetList.size(); i++) {
                 existingBudgetNamesList.add(existingBudgetList.get(i).getBudgetName());     
-                // If we're coming from edit, don't look for active value
-                if(!fromEdit && existingBudgetList.get(i).getActive()) {                    
+                // If we're coming from edit, don't look for currentFlag value
+                if(!fromEdit && existingBudgetList.get(i).getCurrentFlag()) {                    
                     selectedBudgetId = existingBudgetList.get(i).getBudgetId();
-                    activeBudgetIndex = i;
-                    activeBudgetCheckBox.setSelected(true);                               
+                    currentBudgetIndex = i;
+                    currentBudgetCheckBox.setSelected(true);                               
                 }
             }
             budgetList.getItems().clear();
             budgetList.setItems(existingBudgetNamesList);
-            // We set selection to either first one in list, or active
-            budgetList.getSelectionModel().select(activeBudgetIndex);
-            // If there were no actives, need to set selectedBudgetId here
-            selectedBudgetId = existingBudgetList.get(activeBudgetIndex).getBudgetId();
+            // We set selection to either first one in list, or current
+            budgetList.getSelectionModel().select(currentBudgetIndex);
+            // If there is no current, need to set selectedBudgetId here
+            selectedBudgetId = existingBudgetList.get(currentBudgetIndex).getBudgetId();
             displayBalanceLabel(startingBalanceLabel, existingBudgetList
-                    .get(activeBudgetIndex).getStartBalance());
+                    .get(currentBudgetIndex).getStartBalance());
             displayBalanceLabel(currentBalanceLabel, existingBudgetList
-                    .get(activeBudgetIndex).getCurrentBalance());
+                    .get(currentBudgetIndex).getCurrentBalance());
             populateCategoryBudgetTable(selectedBudgetId);
         }
         return !existingBudgetList.isEmpty();
@@ -435,6 +431,8 @@ public class HomeController implements Initializable {
         incomeCheckBoxField.setSelected(false);
         transDateField.setValue(LocalDate.now());
         loadExistingVendors();
+        // Default to disabled
+        vendorCategoryList.setDisable(true);
         newVendorField.setText("");
         categoryList.getSelectionModel().selectFirst();
         methodList.getSelectionModel().selectFirst();
@@ -444,19 +442,19 @@ public class HomeController implements Initializable {
     }
     
     /**
-     * This method updates the budget active value.     
+     * This method updates the budget current value.     
      */    
-    public void onBudgetActiveAction() {
-        // First, set active = false for whatever previous budget was selected.
-        BudgetDAO.clearActiveBudget();
+    public void onBudgetCurrentAction() {
+        // First, set current = false for whatever previous budget was selected.
+        BudgetDAO.clearCurrentFlagBudget();
         // Since the checkbox is cleared when selection changes, we need to find
         // new activeBudgetId if checkbox was selected.
-        if(activeBudgetCheckBox.isSelected()) {
+        if(currentBudgetCheckBox.isSelected()) {
             selectedBudgetId = getSelectedBudgetId(budgetList.getSelectionModel()
                     .getSelectedItem().toString());
         }
         // If check box was unchecked then previous activeBudgetId is same as current.
-        BudgetDAO.updateActiveBudget(selectedBudgetId, activeBudgetCheckBox.isSelected());
+        BudgetDAO.updateCurrentFlagBudget(selectedBudgetId, currentBudgetCheckBox.isSelected());
     }
     
     /**
@@ -730,6 +728,35 @@ public class HomeController implements Initializable {
         BorderPane border = (BorderPane) loader.load();
         BudgetController bController = loader.getController();
         bController.setHomeContoller(this);
+        Scene scene = new Scene(border);
+        stage.setScene(scene);
+        stage.setAlwaysOnTop(true);
+        stage.show();
+    }
+    
+    /**
+     * This method handles the edit category menu item.
+     */
+    @FXML
+    public void onEditCategoryAction() throws IOException {
+        
+    }
+    
+    /**
+     * This method handles the edit vendor menu item.
+     * 
+     * @throws IOException - the IO exception
+     */
+    @FXML
+    public void onEditVendorAction() throws IOException {
+        Stage stage = new Stage();
+        stage.setTitle("Edit Vendors");
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(Main.class.getResource("view/vendor.fxml"));
+        BorderPane border = (BorderPane) loader.load();
+        VendorController vController = loader.getController();
+        vController.setHomeContoller(this);
+        vController.populateFields(selectedBudgetId);
         Scene scene = new Scene(border);
         stage.setScene(scene);
         stage.setAlwaysOnTop(true);

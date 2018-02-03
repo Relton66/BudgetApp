@@ -1,34 +1,36 @@
 package budgetapp.model;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 /**
- * The Vendor model class.
+ * This class represents the objects in the vendor table.
  */
-public class Vendor {
-    
+public class VendorTableEntry {
+
     /** The vendor ID. */
-    private final IntegerProperty vendorId;
+    private final SimpleStringProperty vendorId;
     /** The vendor name. */
-    private final StringProperty vendorName;
-    /** The category ID. */
-    private final IntegerProperty categoryId;
+    private final SimpleStringProperty vendorName;
+    /** The category name. */
+    private final SimpleStringProperty categoryName;
     /** The active flag. */
-    private final BooleanProperty active;
+    private final SimpleBooleanProperty active;
     
     /**
      * The constructor.
+     * 
+     * @param vendorId - the vendor ID
+     * @param vendorName - the vendor name
+     * @param categoryName - the category name
+     * @param active - the active flag 
      */
-    public Vendor() {
-        this.vendorId = new SimpleIntegerProperty();
-        this.vendorName = new SimpleStringProperty();
-        this.categoryId = new SimpleIntegerProperty();
-        this.active = new SimpleBooleanProperty();
+    public VendorTableEntry(String vendorId, String vendorName, String categoryName, boolean active) {        
+        this.vendorId = new SimpleStringProperty(vendorId);
+        this.vendorName = new SimpleStringProperty(vendorName);
+        this.categoryName = new SimpleStringProperty(categoryName);
+        this.active = new SimpleBooleanProperty(active);
     }
     
     /**
@@ -36,7 +38,7 @@ public class Vendor {
      * 
      * @return vendorId value
      */
-    public final int getVendorId() {
+    public final String getVendorId() {
         return vendorId.get();
     }
     
@@ -45,7 +47,7 @@ public class Vendor {
      * 
      * @param vendorId - the vendor ID value to set.
      */
-    public final void setVendorId(int vendorId) {
+    public final void setVendorId(String vendorId) {
         this.vendorId.set(vendorId);
     }
     
@@ -54,7 +56,7 @@ public class Vendor {
      * 
      * @return vendorId property
      */
-    public IntegerProperty vendorIdProperty() {
+    public StringProperty vendorIdProperty() {
         return vendorId;
     }
     
@@ -86,30 +88,30 @@ public class Vendor {
     }
     
     /**
-     * Gets category ID value.
+     * Gets category name value.
      * 
-     * @return categoryId value
+     * @return categoryName value
      */
-    public final int getCategoryId() {
-        return categoryId.get();
+    public final String getCategoryName() {
+        return categoryName.get();
     }
     
     /**
-     * Sets category ID value.
+     * Sets category name value.
      * 
-     * @param categoryId - the category ID value to set.
+     * @param categoryName - the category name value to set.
      */
-    public final void setCategoryId(int categoryId) {
-        this.categoryId.set(categoryId);
+    public final void setCategoryName(String categoryName) {
+        this.categoryName.set(categoryName);
     }
     
     /**
-     * Gets category ID property.
+     * Gets category name property.
      * 
-     * @return categoryId property
+     * @return categoryName property
      */
-    public IntegerProperty categoryIdProperty() {
-        return categoryId;
+    public StringProperty categoryNameProperty() {
+        return categoryName;
     }
     
     /**
@@ -117,16 +119,16 @@ public class Vendor {
      * 
      * @return active value
      */
-    public final boolean getActive() {
+    public final Boolean getActive() {
         return active.get();
     }
-
+    
     /**
      * Sets active value.
      * 
      * @param active - the active value to set.
      */
-    public final void setActive(boolean active) {
+    public final void setActive(Boolean active) {
         this.active.set(active);
     }
     
@@ -135,7 +137,7 @@ public class Vendor {
      * 
      * @return active property
      */
-    public BooleanProperty activeProperty() {
+    public SimpleBooleanProperty activeProperty() {
         return active;
     }
 }

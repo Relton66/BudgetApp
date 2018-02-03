@@ -5,6 +5,8 @@ import budgetapp.dao.VendorDAO;
 import budgetapp.model.Transaction;
 import budgetapp.model.Vendor;
 import java.sql.Date;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
@@ -77,5 +79,21 @@ public class CommonUtil {
             vendorId = vendor.getVendorId();
         }
         return vendorId;
+    }
+    
+    /**
+     * This method loads the existing vendors. 
+     * 
+     * @param existingVendorList - the existing vendor list
+     * @param addNone - if true, add None option
+     */    
+    public static void loadExistingVendors(ChoiceBox existingVendorList, boolean addNone) {
+        ObservableList<String> vendorsList = FXCollections.observableArrayList();
+        if(addNone) {
+            vendorsList.add(Constants.LIST_NONE_OPTION);
+        }
+        vendorsList.addAll(VendorDAO.getExistingVendors());
+        existingVendorList.setItems(vendorsList);
+        existingVendorList.getSelectionModel().selectFirst();
     }
 }

@@ -37,6 +37,7 @@ public class CategoryDAO {
                 category = new Category();
                 category.setCategoryId(results.getInt("CATEGORY_ID"));
                 category.setCategoryName(results.getString("CATEGORY_NAME"));
+                category.setActive(results.getBoolean("ACTIVE"));
                 LOG.info("Category {} was found", categoryName);
             } else {
                 LOG.info("Category {} was not found", categoryName);
@@ -58,12 +59,12 @@ public class CategoryDAO {
         int newId = 0;
         String query;
         if(Main.USE_DERBY) {
-            query = "INSERT INTO category (category_name) VALUES (?)";
+            query = "INSERT INTO category (category_name, active) VALUES (?, true)";
         } else {
-            query = "INSERT INTO category (category_id, category_name) VALUES (category_seq.nextval, ?)";
+            query = "INSERT INTO category (category_id, category_name, active) VALUES (category_seq.nextval, ?, '1')";
         }
         List<Object> parameters = new ArrayList<>();
-        parameters.add(categoryName);
+        parameters.add(categoryName);        
         try {
            newId = DBUtil.dbExecuteUpdate(query, parameters, "CATEGORY_ID");
         } catch (SQLException | ClassNotFoundException e) {

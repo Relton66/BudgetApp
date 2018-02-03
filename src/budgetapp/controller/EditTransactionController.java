@@ -225,7 +225,7 @@ public class EditTransactionController implements Initializable {
         transactionId = Integer.valueOf(transactionEntry.getTransactionId());
         Transaction transaction = TransactionDAO.getTransaction(transactionId);
         transDateField.setValue(transaction.getTransDate().toLocalDate());
-        commentArea.setText(transaction.getComments());
+        commentArea.setText(transaction.getComments() == null ? "" : transaction.getComments());
         amountField.setText(String.format("%.2f", transaction.getAmount()));
         originalAmount = transaction.getAmount();
         incomeCheckBoxField.setSelected(transaction.getIncome());
