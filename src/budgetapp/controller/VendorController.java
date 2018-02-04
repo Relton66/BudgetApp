@@ -3,8 +3,6 @@ package budgetapp.controller;
 import budgetapp.dao.CategoryDAO;
 import budgetapp.dao.VendorDAO;
 import budgetapp.model.Category;
-import budgetapp.model.CategoryBudgetTableEntry;
-import budgetapp.model.MethodTableEntry;
 import budgetapp.model.Vendor;
 import budgetapp.model.VendorTableEntry;
 import budgetapp.util.CommonUtil;
@@ -67,7 +65,9 @@ public class VendorController implements Initializable {
     /** The budget ID. */
     private int budgetId;
     /** The HomeController instance. */
-    private HomeController homeController;    
+    private HomeController homeController;
+    /** The EditTransactionController instance. */
+    private EditTransactionController editTransController;
     /** The logger. */
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(VendorController.class);
     
@@ -89,6 +89,15 @@ public class VendorController implements Initializable {
      */
     public void setHomeContoller(HomeController homeController) {
         this.homeController = homeController;
+    }
+    
+    /**
+     * This method sets the editTransController instance.
+     * 
+     * @param editTransController - the editTransController
+     */
+    public void setEditTransController(EditTransactionController editTransController) {
+        this.editTransController = editTransController;
     }
     
     /**
@@ -122,20 +131,26 @@ public class VendorController implements Initializable {
      * This method handles the update vendor button action.
      */
     public void onUpdateVendorBtnAction() {
-        String vendorName = vendorList.getSelectionModel().getSelectedItem().toString();
-        String categoryName = categoryList.getSelectionModel().getSelectedItem().toString();
-        Vendor vendor = VendorDAO.findVendorByName(vendorName);
-        int vendorId = vendor.getVendorId();
-        int oldCategoryId = vendor.getCategoryId();
-        int categoryId = CategoryDAO.findCategoryByName(categoryName).getCategoryId();
-        if(oldCategoryId != categoryId) {
-            VendorDAO.updateVendorActive(vendorId, false);
-            VendorDAO.saveVendor(vendorName, categoryName);
-            CommonUtil.displayMessage(statusMessage, "Vendor has been updated successfully!", true);
-            homeController.loadExistingVendors();
+        if(!vendorList.getItems().isEmpty() && !categoryList.getItems().isEmpty()) {
+            String vendorName = vendorList.getSelectionModel().getSelectedItem().toString();
+            String categoryName = categoryList.getSelectionModel().getSelectedItem().toString();
+            Vendor vendor = VendorDAO.findVendorByName(vendorName);
+            int vendorId = vendor.getVendorId();
+            int oldCategoryId = vendor.getCategoryId();
+            int categoryId = CategoryDAO.findCategoryByName(categoryName).getCategoryId();
+            if(oldCategoryId != categoryId) {
+                VendorDAO.updateVendorActive(vendorId, false);
+                VendorDAO.saveVendor(vendorName, categoryName);
+                CommonUtil.displayMessage(statusMessage, "Vendor has been updated successfully!", true);
+                homeController.loadExistingVendors();
+                editTransController.loadVendorList(vendorName);
+                populateVendorTable();
+            } else {
+                CommonUtil.displayMessage(statusMessage, "Vendor is already linked to this category.", false);
+            }
         } else {
-            CommonUtil.displayMessage(statusMessage, "Vendor is already linked to this category.", false);
-        }   
+            CommonUtil.displayMessage(statusMessage, "No action can be performed.", false);
+        }
     }
     
     private void populateVendorTable() {
@@ -193,6 +208,7 @@ public class VendorController implements Initializable {
      * This method handles the close button action.
      */
     public void onCloseBtnAction() {
+        homeController.loadExistingVendors();
         Stage stage = (Stage) vendorBorderPane.getScene().getWindow();
         stage.close();
     }

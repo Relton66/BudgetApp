@@ -447,7 +447,7 @@ public class BudgetController implements Initializable {
         } else if(endDate.getValue() == null) {           
             CommonUtil.displayMessage(budgetStatusMessage, "End date is missing.", false);
         } else if(endDate.getValue().isBefore(startDate.getValue())) {
-            CommonUtil.displayMessage(budgetStatusMessage, "End date cannot be equal to or earlier than start date.", false);
+            CommonUtil.displayMessage(budgetStatusMessage, "End date must be after start date.", false);
         } else if(categoryTableIsInvalid()) {
             CommonUtil.displayMessage(budgetStatusMessage, "There's an invalid entry in the category table.", false);
         } else if(exceededBudgetBalance()) {

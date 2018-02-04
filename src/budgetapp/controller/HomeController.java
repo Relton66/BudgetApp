@@ -77,9 +77,9 @@ public class HomeController implements Initializable {
     /** The existing vendor list. */
     @FXML
     private ChoiceBox existingVendorList;
-    /** The vendor category list to show what is linked. */
+    /** The vendor category field to show what is linked. */
     @FXML
-    private ChoiceBox vendorCategoryList;
+    private TextField vendorCategoryField;
     /** The new vendor field. */
     @FXML
     private TextField newVendorField;
@@ -146,8 +146,6 @@ public class HomeController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {        
         loadExistingVendors();
-        // Default to disabled
-        vendorCategoryList.setDisable(true);
         loadActiveMethodTypes();
         boolean budgetsExist = loadExistingBudgets(false);
         if(budgetsExist) {
@@ -189,12 +187,9 @@ public class HomeController implements Initializable {
                 if(!Constants.LIST_NONE_OPTION.equals(vendorName)) {
                     String categoryName = VendorDAO.findCategoryByVendorId(VendorDAO.findVendorByName(vendorName)
                             .getVendorId()).getCategoryName();
-                    vendorsList.add(categoryName);
-                    vendorCategoryList.setItems(vendorsList);
-                    vendorCategoryList.getSelectionModel().selectFirst();
+                    vendorCategoryField.setText(categoryName);                    
                 } else {
-                    vendorsList.clear();
-                    vendorCategoryList.setItems(vendorsList);
+                    vendorCategoryField.setText("");
                 }
             }
         });
@@ -203,6 +198,7 @@ public class HomeController implements Initializable {
         // existing vendor field so change it to default.
         newVendorField.textProperty().addListener((observable, oldValue, newValue) -> {
             existingVendorList.getSelectionModel().selectFirst();
+            vendorCategoryField.setText("");
         });
         
     }
@@ -361,6 +357,7 @@ public class HomeController implements Initializable {
                 validInput = true;
             }
         } else {
+            // TODO need to check existing Category is in budget
             validInput = true;
         }
         return validInput;
@@ -431,8 +428,7 @@ public class HomeController implements Initializable {
         incomeCheckBoxField.setSelected(false);
         transDateField.setValue(LocalDate.now());
         loadExistingVendors();
-        // Default to disabled
-        vendorCategoryList.setDisable(true);
+        vendorCategoryField.setText("");
         newVendorField.setText("");
         categoryList.getSelectionModel().selectFirst();
         methodList.getSelectionModel().selectFirst();
@@ -683,17 +679,6 @@ public class HomeController implements Initializable {
     }
     
     /**
-     * This method handles the edit category button action.
-     */
-    public void onEditCategoryBtnAction() {
-        Alert alert = new Alert(AlertType.INFORMATION);
-        alert.setTitle("Coming Soon!");
-        alert.setHeaderText(null);
-        alert.setContentText("This feature is not implemented yet.");
-        alert.showAndWait();
-    }
-    
-    /**
      * This method sets up the edit transaction dialog.
      * 
      * @param transactionEntry - the transaction row entry
@@ -761,6 +746,15 @@ public class HomeController implements Initializable {
         stage.setScene(scene);
         stage.setAlwaysOnTop(true);
         stage.show();
+    }
+    
+    /**
+     * This method handles the edit vendor category button action.
+     * 
+     * @throws IOException - the IO exception
+     */
+    public void onEditCategoryBtnAction() throws IOException {
+        onEditVendorAction();
     }
     
     /**

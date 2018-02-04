@@ -1,5 +1,6 @@
 package budgetapp.controller;
 
+import budgetapp.Main;
 import budgetapp.dao.BudgetDAO;
 import budgetapp.dao.CategoryBudgetDAO;
 import budgetapp.dao.CategoryDAO;
@@ -12,6 +13,7 @@ import budgetapp.model.TransactionTableEntry;
 import budgetapp.util.CommonUtil;
 import budgetapp.util.Constants;
 import budgetapp.util.StringUtil;
+import java.io.IOException;
 import java.net.URL;
 import java.sql.Date;
 import java.util.ArrayList;
@@ -20,7 +22,9 @@ import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
@@ -45,9 +49,9 @@ public class EditTransactionController implements Initializable {
     /** The existing vendor list. */
     @FXML
     private ChoiceBox existingVendorList;
-    /** The vendor category list to show what is linked. */
+    /** The vendor category field to show what is linked. */
     @FXML
-    private ChoiceBox vendorCategoryList;
+    private TextField vendorCategoryField;
     /** The new vendor field. */
     @FXML
     private TextField newVendorField;
@@ -79,6 +83,8 @@ public class EditTransactionController implements Initializable {
     private double originalAmount;
     /** The original category ID. */
     private int originalCategoryId;
+    /** The original category name. */
+    private String originalCategoryName;
     /** The original income flag value. */
     private boolean originalIncomeValue;
      /** The HomeController instance. */
@@ -95,10 +101,26 @@ public class EditTransactionController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         
+        // This handles when the vendor list changes
+        existingVendorList.setOnAction((event) -> {
+            if(existingVendorList.getSelectionModel().getSelectedItem() != null) {
+                ObservableList<String> vendorsList = FXCollections.observableArrayList();
+                String vendorName = existingVendorList.getSelectionModel().getSelectedItem().toString();
+                if(Constants.LIST_NONE_OPTION.equals(vendorName)) {
+                    vendorCategoryField.setText("");
+                } else {
+                    String categoryName = VendorDAO.findCategoryByVendorId(VendorDAO.findVendorByName(vendorName)
+                        .getVendorId()).getCategoryName();
+                    vendorCategoryField.setText(categoryName);
+                }
+            }
+        });
+        
         // When user types in here, it's implied they aren't wanting to use the
         // existing vendor field so change it to default.
         newVendorField.textProperty().addListener((observable, oldValue, newValue) -> {
             existingVendorList.getSelectionModel().selectFirst();
+            vendorCategoryField.setText("");
         });
     }    
     
@@ -113,9 +135,23 @@ public class EditTransactionController implements Initializable {
     
     /**
      * This method handles the edit category button action.
+     * 
+     * @throws IOException - the IO exception
      */
-    public void onEditCategoryBtnAction() {
-        vendorCategoryList.setDisable(false);
+    public void onEditCategoryBtnAction() throws IOException {
+        Stage stage = new Stage();
+        stage.setTitle("Edit Vendors");
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(Main.class.getResource("view/vendor.fxml"));
+        BorderPane border = (BorderPane) loader.load();
+        VendorController vController = loader.getController();
+        vController.setEditTransController(this);
+        vController.setHomeContoller(homeController);
+        vController.populateFields(budgetId);
+        Scene scene = new Scene(border);
+        stage.setScene(scene);
+        stage.setAlwaysOnTop(true);
+        stage.show();
     }
     
     /**
@@ -124,6 +160,10 @@ public class EditTransactionController implements Initializable {
     private void beginSaveProcess() {
         double newAmount = StringUtil.convertFromDollarFormat(amountField.getText());
         String categoryName = categoryList.getSelectionModel().getSelectedItem().toString();
+        if(!Constants.LIST_NONE_OPTION.equals(existingVendorList.getSelectionModel().getSelectedItem().toString())
+            && !originalCategoryName.equalsIgnoreCase(vendorCategoryField.getText())) {
+                categoryName = vendorCategoryField.getText();
+        }
         int categoryId = findCategoryId(categoryName);
         saveTransactionData(newAmount, categoryName);
         updateBalances(newAmount, categoryId);
@@ -231,7 +271,8 @@ public class EditTransactionController implements Initializable {
         incomeCheckBoxField.setSelected(transaction.getIncome());
         originalIncomeValue = transaction.getIncome();
         loadVendorList(transactionEntry.getVendorName());
-        loadCategoryList(budgetId, transactionEntry.getCategoryName());
+        originalCategoryName = transactionEntry.getCategoryName();
+        loadCategoryList(budgetId, originalCategoryName);
         loadMethodList(transactionEntry.getMethodType());
     }
     
@@ -240,7 +281,7 @@ public class EditTransactionController implements Initializable {
      * 
      * @param vendorName - the vendor name
      */
-    private void loadVendorList(String vendorName) {
+    public void loadVendorList(String vendorName) {
         ObservableList<String> vendorsList = FXCollections.observableArrayList();
         vendorsList.add(Constants.LIST_NONE_OPTION);
         vendorsList.addAll(VendorDAO.getExistingVendors());
@@ -249,6 +290,9 @@ public class EditTransactionController implements Initializable {
         for(int i=0; i<existingVendorList.getItems().size(); i++) {
             if(vendorName.equalsIgnoreCase(existingVendorList.getItems().get(i).toString())) {
                 existingVendorList.getSelectionModel().select(i);
+                String categoryName = VendorDAO.findCategoryByVendorId(VendorDAO.findVendorByName(vendorName)
+                        .getVendorId()).getCategoryName();
+                vendorCategoryField.setText(categoryName); 
                 break;
             }
         }
