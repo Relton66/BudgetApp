@@ -143,7 +143,9 @@ public class VendorController implements Initializable {
                 VendorDAO.saveVendor(vendorName, categoryName);
                 CommonUtil.displayMessage(statusMessage, "Vendor has been updated successfully!", true);
                 homeController.loadExistingVendors();
-                editTransController.loadVendorList(vendorName);
+                if(editTransController != null) {
+                    editTransController.loadVendorList(vendorName);
+                }
                 populateVendorTable();
             } else {
                 CommonUtil.displayMessage(statusMessage, "Vendor is already linked to this category.", false);

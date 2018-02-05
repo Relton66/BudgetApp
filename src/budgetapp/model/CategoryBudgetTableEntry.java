@@ -150,7 +150,14 @@ public class CategoryBudgetTableEntry {
         return budgetRemaining;
     }
     
-    public CategoryBudgetTableEntry clone() {
+    /**
+     * This method clones a CategoryBudgetTableEntry entity.
+     * 
+     * @return - a copy of a CategoryBudgetTableEntry entity.
+     * @throws CloneNotSupportedException - the CloneNotSupported exception
+     */
+    @Override
+    public CategoryBudgetTableEntry clone() throws CloneNotSupportedException {
         return new CategoryBudgetTableEntry(this.categoryId.getValue(), this.categoryName.getValue(),
             this.budgetStarting.getValue(), this.budgetRemaining.getValue());
     }

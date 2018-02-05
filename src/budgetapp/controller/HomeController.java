@@ -356,8 +356,9 @@ public class HomeController implements Initializable {
             } else {
                 validInput = true;
             }
+        } else if(!categoryList.getItems().contains(vendorCategoryField.getText())) {
+            CommonUtil.displayMessage(statusMessage, "Existing Vendor Category needs to be updated.", false);
         } else {
-            // TODO need to check existing Category is in budget
             validInput = true;
         }
         return validInput;
@@ -430,6 +431,7 @@ public class HomeController implements Initializable {
         loadExistingVendors();
         vendorCategoryField.setText("");
         newVendorField.setText("");
+        commentArea.setText("");
         categoryList.getSelectionModel().selectFirst();
         methodList.getSelectionModel().selectFirst();
         if(resetMessage) {
@@ -721,6 +723,8 @@ public class HomeController implements Initializable {
     
     /**
      * This method handles the edit category menu item.
+     * 
+     * @throws IOException - the IO exception
      */
     @FXML
     public void onEditCategoryAction() throws IOException {

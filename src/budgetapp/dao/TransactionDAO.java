@@ -5,7 +5,6 @@ import budgetapp.model.Transaction;
 import budgetapp.model.TransactionTableEntry;
 import budgetapp.util.DBUtil;
 import budgetapp.util.StringUtil;
-import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -91,7 +90,7 @@ public class TransactionDAO {
             query += "AND cat.category_id = ? ";
              parameters.add(categoryId);
         }
-        query += "ORDER BY trans_date";             
+        query += "ORDER BY trans_date, vendor_name";             
         try {
             ResultSet results = DBUtil.dbExecuteSelectQuery(query, parameters);
             while(results.next()) {

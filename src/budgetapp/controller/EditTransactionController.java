@@ -171,6 +171,14 @@ public class EditTransactionController implements Initializable {
         CommonUtil.displayMessage(statusMessage, "Transaction updated successfully!", true);
         originalAmount = newAmount;
         originalIncomeValue = incomeCheckBoxField.isSelected();
+        originalCategoryId = categoryId;
+        homeController.loadExistingVendors();
+        String existingVendorName = existingVendorList.getSelectionModel().getSelectedItem().toString();
+        if(Constants.LIST_NONE_OPTION.equals(existingVendorName)) {
+            loadVendorList(newVendorField.getText());
+        } else {
+           loadVendorList(existingVendorName);
+        }
     }
     
     /**
@@ -262,7 +270,7 @@ public class EditTransactionController implements Initializable {
      */
     public void populateFields(int budgetId, TransactionTableEntry transactionEntry) {
         this.budgetId = budgetId;
-        transactionId = Integer.valueOf(transactionEntry.getTransactionId());
+        transactionId = Integer.parseInt(transactionEntry.getTransactionId());
         Transaction transaction = TransactionDAO.getTransaction(transactionId);
         transDateField.setValue(transaction.getTransDate().toLocalDate());
         commentArea.setText(transaction.getComments() == null ? "" : transaction.getComments());

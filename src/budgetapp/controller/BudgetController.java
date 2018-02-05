@@ -8,11 +8,11 @@ import budgetapp.model.Category;
 import budgetapp.model.CategoryBudgetTableEntry;
 import budgetapp.util.CommonUtil;
 import budgetapp.util.StringUtil;
-import static budgetapp.util.StringUtil.convertFromDollarFormat;
 import java.net.URL;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 import javafx.beans.binding.Bindings;
@@ -273,9 +273,9 @@ public class BudgetController implements Initializable {
     private boolean categoryAlreadyExists(String categoryName) {
         List<String> currentCategoryList = new ArrayList<>();
         for(CategoryBudgetTableEntry entry : categoryTableList) {
-            currentCategoryList.add(entry.getCategoryName().toUpperCase());
+            currentCategoryList.add(entry.getCategoryName().toUpperCase(Locale.ENGLISH));
         }
-        return currentCategoryList.contains(categoryName.toUpperCase());
+        return currentCategoryList.contains(categoryName.toUpperCase(Locale.ENGLISH));
     }
     
     /**
@@ -329,9 +329,7 @@ public class BudgetController implements Initializable {
         for(CategoryBudgetTableEntry currentEntry : categoryTableList) {
             boolean needToAdd = true;
             for(CategoryBudgetTableEntry existingEntry : originalCategoryList) {
-                if(currentEntry.getCategoryName().equalsIgnoreCase(existingEntry.getCategoryName())) {// ||
-                     //   (currentEntry.getCategoryId() != null &&
-                     //   currentEntry.getCategoryId().equals(existingEntry.getCategoryId()))) {
+                if(currentEntry.getCategoryName().equalsIgnoreCase(existingEntry.getCategoryName())) {
                     needToAdd = false;
                     updateBalances(budgetId, currentEntry.getCategoryName(),
                         currentEntry.getBudgetStarting(), existingEntry.getBudgetStarting());
@@ -382,13 +380,7 @@ public class BudgetController implements Initializable {
             // First we make sure the current entry doesn't exist in our category list
             if(!existingCategories.contains(entry.getCategoryName())) {
                 // If the ID is not present in entry, it's a brand new category
-                // Else the category name was renamed
-                //if(entry.getCategoryId() == null) {
                 CategoryDAO.saveCategory(entry.getCategoryName());
-                //} //else {
-                  ////  CategoryDAO.updateCategoryName(entry.getCategoryName(), 
-                  //      Integer.parseInt(entry.getCategoryId()));
-               // }
             }
         }
         // Need to loop through original and if not in current, delete it
@@ -467,9 +459,9 @@ public class BudgetController implements Initializable {
     private boolean budgetNameIsUnique(String budgetName) {
         List<String> budgetNamesList = BudgetDAO.getExistingBudgetNames()
                 .stream().map(String::toUpperCase).collect(Collectors.toList());
-        boolean isUnique = !budgetNamesList.contains(budgetName.toUpperCase());        
+        boolean isUnique = !budgetNamesList.contains(budgetName.toUpperCase(Locale.ENGLISH));        
         if(!isUnique && isEdit) {
-            isUnique = originalBudgetName.toUpperCase().equalsIgnoreCase(budgetName.toUpperCase());
+            isUnique = originalBudgetName.toUpperCase().equalsIgnoreCase(budgetName.toUpperCase(Locale.ENGLISH));
         }
         return isUnique;
     }
@@ -592,7 +584,11 @@ public class BudgetController implements Initializable {
         originalCategoryList.clear();
         categoryTableList = CategoryBudgetDAO.getCategoryBudgetsForTable(budgetId);
         for(int i=0; i<categoryTableList.size(); i++) {
-            originalCategoryList.add(categoryTableList.get(i).clone());
+            try {
+                originalCategoryList.add(categoryTableList.get(i).clone());
+            } catch (CloneNotSupportedException ex) {
+                LOG.error("CloneNotSupported exception in setEditVariables", ex);
+            }
         }
         editedBudgetId = budgetId;
         originalBudgetName = budgetName;

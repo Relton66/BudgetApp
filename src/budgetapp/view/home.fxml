@@ -19,7 +19,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="budgetapp.controller.HomeController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="811.0" prefWidth="1100.0" style="-fx-background-color: #cce6e5;" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="budgetapp.controller.HomeController">
    <left>
       <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
@@ -31,8 +31,8 @@
                   <DatePicker fx:id="transDateField" layoutY="94.0" />
                   <ChoiceBox fx:id="existingVendorList" layoutX="1.0" layoutY="150.0" prefWidth="150.0" />
                   <TextField fx:id="newVendorField" layoutX="1.0" layoutY="288.0" />
-                  <Button fx:id="submitBtn" defaultButton="true" layoutX="31.0" layoutY="566.0" mnemonicParsing="false" onAction="#onSubmitAction" styleClass="#green" text="Submit" />
-                  <Button fx:id="resetBtn" layoutX="95.0" layoutY="566.0" mnemonicParsing="false" onAction="#onResetAction" text="Reset" />
+                  <Button id="green" fx:id="submitBtn" defaultButton="true" layoutX="31.0" layoutY="566.0" mnemonicParsing="false" onAction="#onSubmitAction" stylesheets="@../buttonStyles.css" text="Submit" />
+                  <Button id="round-red" fx:id="resetBtn" layoutX="95.0" layoutY="566.0" mnemonicParsing="false" onAction="#onResetAction" stylesheets="@../buttonStyles.css" text="Reset" />
                   <Label layoutX="2.0" text="Amount:" />
                   <Label layoutX="2.0" layoutY="133.0" text="Select Existing Vendor:" />
                   <Label layoutX="62.0" layoutY="237.0" text="OR" />
@@ -108,7 +108,7 @@
       <TabPane fx:id="categoryTabPane" prefHeight="200.0" prefWidth="716.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER" />
    </center>
    <right>
-      <TableView fx:id="categoryBudgetTable" prefHeight="635.0" prefWidth="297.0" BorderPane.alignment="CENTER">
+      <TableView fx:id="categoryBudgetTable" prefHeight="635.0" prefWidth="297.0" style="-fx-background-color: #cce6e5;" BorderPane.alignment="CENTER">
          <columns>
             <TableColumn fx:id="categoryIdColumn" editable="false" prefWidth="75.0" text="Category ID" visible="false" />
             <TableColumn fx:id="categoryColumn" prefWidth="75.0" text="Category Name" />
