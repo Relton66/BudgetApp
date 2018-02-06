@@ -1,8 +1,8 @@
 ----------------------------------------------------------------
-Thu Feb 01 21:48:52 CST 2018:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.14.1.0 - (1808820): instance a816c00e-0161-54a1-9ba8-000006bf5ed0 
+Mon Feb 05 22:05:26 CST 2018:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.14.1.0 - (1808820): instance a816c00e-0161-694a-3346-000006bdf308 
 on database directory C:\ProgramProjects\BudgetApp\database\budgetAppDBTest with class loader sun.misc.Launcher$AppClassLoader@55f96302 
-Loaded from file:/C:/ProgramProjects/BudgetApp/dist/run429789996/lib/derby.jar
+Loaded from file:/C:/ProgramProjects/BudgetApp/dist/run1231581292/lib/derby.jar
 java.vendor=Oracle Corporation
 java.runtime.version=1.8.0_151-b12
 user.dir=C:\ProgramProjects\BudgetApp

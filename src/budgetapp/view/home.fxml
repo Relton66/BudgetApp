@@ -32,7 +32,7 @@
                   <ChoiceBox fx:id="existingVendorList" layoutX="1.0" layoutY="150.0" prefWidth="150.0" />
                   <TextField fx:id="newVendorField" layoutX="1.0" layoutY="288.0" />
                   <Button id="green" fx:id="submitBtn" defaultButton="true" layoutX="31.0" layoutY="566.0" mnemonicParsing="false" onAction="#onSubmitAction" stylesheets="@../buttonStyles.css" text="Submit" />
-                  <Button id="round-red" fx:id="resetBtn" layoutX="95.0" layoutY="566.0" mnemonicParsing="false" onAction="#onResetAction" stylesheets="@../buttonStyles.css" text="Reset" />
+                  <Button id="bevel-grey" fx:id="resetBtn" layoutX="95.0" layoutY="566.0" mnemonicParsing="false" onAction="#onResetAction" stylesheets="@../buttonStyles.css" text="Reset" />
                   <Label layoutX="2.0" text="Amount:" />
                   <Label layoutX="2.0" layoutY="133.0" text="Select Existing Vendor:" />
                   <Label layoutX="62.0" layoutY="237.0" text="OR" />
@@ -69,8 +69,8 @@
             <Label fx:id="currentBalanceLabel" layoutX="109.0" layoutY="114.0" text="\$0.00" />
             <Separator layoutX="7.0" layoutY="441.0" orientation="VERTICAL" prefHeight="108.0" prefWidth="6.0" />
             <CheckBox fx:id="currentBudgetCheckBox" layoutX="13.0" layoutY="70.0" mnemonicParsing="false" onAction="#onBudgetCurrentAction" text="Set as Current Budget" />
-            <Button fx:id="editBudgetBtn" layoutX="167.0" layoutY="38.0" mnemonicParsing="false" onAction="#onEditBudgetBtnAction" text="Edit" />
-            <Button fx:id="editCategoryBtn" layoutX="166.0" layoutY="379.0" mnemonicParsing="false" onAction="#onEditCategoryBtnAction" text="Edit" />
+            <Button id="green" fx:id="editBudgetBtn" layoutX="167.0" layoutY="38.0" mnemonicParsing="false" onAction="#onEditBudgetBtnAction" stylesheets="@../buttonStyles.css" text="Edit" />
+            <Button id="green" fx:id="editCategoryBtn" layoutX="166.0" layoutY="379.0" mnemonicParsing="false" onAction="#onEditCategoryBtnAction" stylesheets="@../buttonStyles.css" text="Edit" />
          </children>
       </AnchorPane>
    </left>

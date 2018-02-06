@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 
-<BorderPane fx:id="reportBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="900.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="budgetapp.controller.ReportController">
+<BorderPane fx:id="reportBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="900.0" prefWidth="700.0" style="-fx-background-color: #cce6e5;" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="budgetapp.controller.ReportController">
    <top>
       <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
@@ -19,7 +19,7 @@
             <DatePicker fx:id="startDateField" disable="true" layoutX="13.0" layoutY="94.0" />
             <Label layoutX="13.0" layoutY="126.0" text="End Date:" />
             <DatePicker fx:id="endDateField" disable="true" layoutX="14.0" layoutY="147.0" />
-            <Button fx:id="onGenerateBtn" layoutX="204.0" layoutY="147.0" mnemonicParsing="false" onAction="#onGenerateBtnAction" text="Generate Report" />
+            <Button id="green" fx:id="onGenerateBtn" layoutX="204.0" layoutY="147.0" mnemonicParsing="false" onAction="#onGenerateBtnAction" stylesheets="@../buttonStyles.css" text="Generate Report" />
             <Label fx:id="reportStatusMessage" layoutX="204.0" layoutY="178.0" />
          </children>
       </AnchorPane>
@@ -34,7 +34,7 @@
    <bottom>
       <HBox alignment="CENTER" prefHeight="47.0" prefWidth="700.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="closeBtn" alignment="CENTER" mnemonicParsing="false" onAction="#onCloseBtnAction" text="Close" />
+            <Button id="bevel-grey" fx:id="closeBtn" alignment="CENTER" mnemonicParsing="false" onAction="#onCloseBtnAction" stylesheets="@../buttonStyles.css" text="Close" />
          </children>
       </HBox>
    </bottom>
