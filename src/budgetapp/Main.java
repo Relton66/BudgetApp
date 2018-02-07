@@ -36,7 +36,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
-        this.primaryStage.setTitle("Budget App");
+        this.primaryStage.setTitle("Budget App V1.0");
         initHomeLayout();
     }
 

@@ -10,19 +10,19 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 
-<BorderPane fx:id="methodBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="331.0" prefWidth="278.0" style="-fx-background-color: #cce6e5;" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="budgetapp.controller.MethodController">
+<BorderPane fx:id="methodBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="331.0" prefWidth="278.0" style="-fx-background-color: #cce6e5;" stylesheets="@Styles.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="budgetapp.controller.MethodController">
    <top>
-      <AnchorPane prefHeight="100.0" prefWidth="278.0" BorderPane.alignment="CENTER">
+      <AnchorPane prefHeight="100.0" prefWidth="278.0" stylesheets="@Styles.css" BorderPane.alignment="CENTER">
          <children>
             <Label layoutX="14.0" layoutY="16.0" text="Enter Method Type" />
-            <TextField fx:id="methodTypeField" layoutX="14.0" layoutY="39.0" />
-            <Button id="green" fx:id="addMethodBtn" layoutX="174.0" layoutY="39.0" mnemonicParsing="false" onAction="#onAddBtnAction" stylesheets="@../buttonStyles.css" text="Add" />
+            <TextField id="bevel-grey" fx:id="methodTypeField" layoutX="14.0" layoutY="39.0" stylesheets="@Styles.css" />
+            <Button id="bevel-grey" fx:id="addMethodBtn" layoutX="174.0" layoutY="39.0" mnemonicParsing="false" onAction="#onAddBtnAction" stylesheets="@Styles.css" text="Add" />
             <Label fx:id="statusMessage" layoutX="15.0" layoutY="71.0" prefHeight="17.0" prefWidth="256.0" />
          </children>
       </AnchorPane>
    </top>
    <center>
-      <TableView fx:id="methodTable" editable="true" prefHeight="263.0" prefWidth="278.0" BorderPane.alignment="CENTER">
+      <TableView fx:id="methodTable" editable="true" prefHeight="263.0" prefWidth="278.0" stylesheets="@Styles.css" BorderPane.alignment="CENTER">
         <columns>
           <TableColumn fx:id="methodTypeCol" editable="false" prefWidth="75.0" text="Method Type" />
             <TableColumn fx:id="activeCol" prefWidth="75.0" text="Active?" />
@@ -33,14 +33,14 @@
       </TableView>
    </center>
    <bottom>
-      <HBox alignment="CENTER" prefHeight="37.0" prefWidth="278.0" BorderPane.alignment="CENTER">
+      <HBox alignment="CENTER" prefHeight="37.0" prefWidth="278.0" stylesheets="@Styles.css" BorderPane.alignment="CENTER">
          <children>
-            <Button id="green" fx:id="saveBtn" mnemonicParsing="false" onAction="#onSaveBtnAction" stylesheets="@../buttonStyles.css" text="Save">
+            <Button id="bevel-grey" fx:id="saveBtn" mnemonicParsing="false" onAction="#onSaveBtnAction" stylesheets="@Styles.css" text="Save">
                <HBox.margin>
                   <Insets right="10.0" />
                </HBox.margin>
             </Button>
-            <Button id="bevel-grey" fx:id="closeBtn" mnemonicParsing="false" onAction="#onCloseBtnAction" stylesheets="@../buttonStyles.css" text="Close" />
+            <Button id="bevel-grey" fx:id="closeBtn" mnemonicParsing="false" onAction="#onCloseBtnAction" stylesheets="@Styles.css" text="Close" />
          </children>
       </HBox>
    </bottom>

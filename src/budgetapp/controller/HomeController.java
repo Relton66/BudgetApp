@@ -15,6 +15,7 @@ import budgetapp.model.TransactionTableEntry;
 import budgetapp.util.CommonUtil;
 import budgetapp.util.Constants;
 import budgetapp.util.StringUtil;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Date;
@@ -56,6 +57,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import org.slf4j.LoggerFactory;
@@ -65,6 +67,9 @@ import org.slf4j.LoggerFactory;
  */
 public class HomeController implements Initializable {
     
+    /** The border pane. */
+    @FXML
+    private BorderPane homeBorderPane;
     /** The amount field. */
     @FXML
     private TextField amountField;
@@ -803,7 +808,14 @@ public class HomeController implements Initializable {
         alert.setTitle("Coming Soon!");
         alert.setHeaderText(null);
         alert.setContentText("This feature is not implemented yet.");
-        alert.showAndWait();
+        alert.showAndWait(); 
+       /* Stage stage = (Stage) homeBorderPane.getScene().getWindow();
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Budget");
+        File file = fileChooser.showSaveDialog(stage);
+        if (file != null) {
+            
+        } */
     }
     
     /**

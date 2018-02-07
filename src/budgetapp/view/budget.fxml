@@ -12,34 +12,34 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 
-<BorderPane fx:id="budgetBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="710.0" prefWidth="300.0" style="-fx-background-color: #cce6e5;" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="budgetapp.controller.BudgetController">
+<BorderPane fx:id="budgetBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="710.0" prefWidth="300.0" style="-fx-background-color: #cce6e5;" stylesheets="@Styles.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="budgetapp.controller.BudgetController">
    <top>
-      <AnchorPane prefHeight="396.0" prefWidth="300.0" BorderPane.alignment="CENTER">
+      <AnchorPane prefHeight="396.0" prefWidth="300.0" stylesheets="@Styles.css" BorderPane.alignment="CENTER">
          <children>
             <Label layoutX="14.0" layoutY="12.0" text="Budget Name" />
-            <TextField fx:id="nameField" layoutX="14.0" layoutY="29.0" />
-            <TextField fx:id="startBalance" layoutX="180.0" layoutY="29.0" prefHeight="25.0" prefWidth="110.0" />
+            <TextField id="bevel-grey" fx:id="nameField" layoutX="14.0" layoutY="29.0" stylesheets="@Styles.css" />
+            <TextField id="bevel-grey" fx:id="startBalance" layoutX="180.0" layoutY="29.0" prefHeight="25.0" prefWidth="110.0" stylesheets="@Styles.css" />
             <Label layoutX="14.0" layoutY="65.0" text="Budget Start Date" />
-            <DatePicker fx:id="startDate" layoutX="14.0" layoutY="83.0" />
+            <DatePicker id="bevel-grey" fx:id="startDate" layoutX="14.0" layoutY="83.0" stylesheets="@Styles.css" />
             <Label layoutX="14.0" layoutY="121.0" text="Budget End Date" />
-            <DatePicker fx:id="endDate" layoutX="14.0" layoutY="139.0" />
+            <DatePicker id="bevel-grey" fx:id="endDate" layoutX="14.0" layoutY="139.0" stylesheets="@Styles.css" />
             <Label layoutX="180.0" layoutY="12.0" text="Starting Balance" />
             <Label fx:id="budgetStatusMessage" layoutX="6.0" layoutY="170.0" prefHeight="29.0" prefWidth="281.0" wrapText="true" />
             <Label layoutX="14.0" layoutY="215.0" text="Category:" />
-            <TextField fx:id="categoryField" layoutX="14.0" layoutY="232.0" prefHeight="25.0" prefWidth="127.0" />
+            <TextField id="bevel-grey" fx:id="categoryField" layoutX="14.0" layoutY="232.0" prefHeight="25.0" prefWidth="127.0" stylesheets="@Styles.css" />
             <Label layoutX="149.0" layoutY="215.0" text="Budget Amount:" />
-            <TextField fx:id="budgetAmountField" layoutX="149.0" layoutY="232.0" prefHeight="25.0" prefWidth="125.0" />
+            <TextField id="bevel-grey" fx:id="budgetAmountField" layoutX="149.0" layoutY="232.0" prefHeight="25.0" prefWidth="125.0" stylesheets="@Styles.css" />
             <Separator layoutX="-1.0" layoutY="205.0" prefHeight="4.0" prefWidth="300.0" />
-            <Button id="green" fx:id="addCategoryBtn" layoutX="14.0" layoutY="261.0" mnemonicParsing="false" onAction="#onAddCategory" stylesheets="@../buttonStyles.css" text="Add Category" />
+            <Button id="bevel-grey" fx:id="addCategoryBtn" layoutX="14.0" layoutY="261.0" mnemonicParsing="false" onAction="#onAddCategory" stylesheets="@Styles.css" text="Add Category" />
             <Label fx:id="categoryStatusMessage" layoutX="8.0" layoutY="358.0" prefHeight="25.0" prefWidth="281.0" wrapText="true" />
-            <ChoiceBox fx:id="previousBudgetList" layoutX="13.0" layoutY="322.0" prefWidth="150.0" />
+            <ChoiceBox id="bevel-grey" fx:id="previousBudgetList" layoutX="13.0" layoutY="322.0" prefWidth="150.0" stylesheets="@Styles.css" />
             <Label layoutX="14.0" layoutY="305.0" text="Load Previous Budget Categories:" />
-            <Button id="green" fx:id="loadBtn" layoutX="167.0" layoutY="322.0" mnemonicParsing="false" onAction="#onLoadBudgets" stylesheets="@../buttonStyles.css" text="Load" />
+            <Button id="bevel-grey" fx:id="loadBtn" layoutX="167.0" layoutY="322.0" mnemonicParsing="false" onAction="#onLoadBudgets" stylesheets="@Styles.css" text="Load" />
          </children>
       </AnchorPane>
    </top>
    <center>
-      <TableView fx:id="categoryBudgetTable" editable="true" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <TableView fx:id="categoryBudgetTable" editable="true" prefHeight="200.0" prefWidth="200.0" stylesheets="@Styles.css" BorderPane.alignment="CENTER">
         <columns>
             <TableColumn fx:id="categoryIdColumn" editable="false" onEditCommit="#onCategoryEditCommit" prefWidth="75.0" text="Category ID" visible="false" />
           <TableColumn fx:id="categoryColumn" onEditCommit="#onCategoryEditCommit" prefWidth="75.0" text="Category Name" />
@@ -51,13 +51,13 @@
       </TableView>
    </center>
    <bottom>
-      <HBox alignment="CENTER" prefHeight="65.0" prefWidth="300.0" BorderPane.alignment="CENTER">
+      <HBox alignment="CENTER" prefHeight="65.0" prefWidth="300.0" stylesheets="@Styles.css" BorderPane.alignment="CENTER">
          <children>
             <AnchorPane prefHeight="65.0" prefWidth="296.0">
                <children>
-                  <Button id="green" fx:id="saveBtn" layoutX="97.0" layoutY="34.0" mnemonicParsing="false" onAction="#onSaveAction" stylesheets="@../buttonStyles.css" text="Save" />
-                  <Button id="bevel-grey" fx:id="closeBtn" layoutX="157.0" layoutY="34.0" mnemonicParsing="false" onAction="#onCloseAction" stylesheets="@../buttonStyles.css" text="Close" />
-                  <TextField fx:id="budgetTotalField" layoutX="200.0" layoutY="2.0" prefHeight="25.0" prefWidth="97.0" />
+                  <Button id="bevel-grey" fx:id="saveBtn" layoutX="97.0" layoutY="34.0" mnemonicParsing="false" onAction="#onSaveAction" stylesheets="@Styles.css" text="Save" />
+                  <Button id="bevel-grey" fx:id="closeBtn" layoutX="157.0" layoutY="34.0" mnemonicParsing="false" onAction="#onCloseAction" stylesheets="@Styles.css" text="Close" />
+                  <TextField id="bevel-grey" fx:id="budgetTotalField" layoutX="200.0" layoutY="2.0" prefHeight="25.0" prefWidth="97.0" stylesheets="@Styles.css" />
                   <Label layoutX="32.0" layoutY="6.0" text="Current Category Budget Total:" />
                </children>
             </AnchorPane>
