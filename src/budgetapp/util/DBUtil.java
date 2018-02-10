@@ -188,7 +188,7 @@ public class DBUtil {
         } else {
             stmt = conn.prepareStatement(query);
         }
-        LOG.debug("Statement to execute: " + query + "\n");
+        LOG.debug("Statement to execute: " + query + "\n");        
         for(int i=0; i < parameters.size(); i++) {
             if(parameters.get(i) instanceof String) {
                 stmt.setString(i+1, parameters.get(i).toString());
@@ -205,7 +205,7 @@ public class DBUtil {
             } else if (parameters.get(i) instanceof Boolean) {
                 stmt.setBoolean(i+1, Boolean.valueOf(parameters.get(i).toString()));
                 LOG.debug("Parameter {} is {}", i+1, Boolean.valueOf(parameters.get(i).toString()));
-            }
+            } 
         }
         return stmt;
     }

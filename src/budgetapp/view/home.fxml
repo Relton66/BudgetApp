@@ -19,9 +19,9 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="homeBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="811.0" prefWidth="1100.0" style="-fx-background-color: #cce6e5;" stylesheets="@Styles.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="budgetapp.controller.HomeController">
+<BorderPane fx:id="homeBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="811.0" prefWidth="1100.0" style="-fx-background-color: #cce6e5;" stylesheets="@../Styles.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="budgetapp.controller.HomeController">
    <left>
-      <AnchorPane prefHeight="200.0" prefWidth="200.0" stylesheets="@Styles.css" BorderPane.alignment="CENTER">
+      <AnchorPane prefHeight="200.0" prefWidth="200.0" stylesheets="@../Styles.css" BorderPane.alignment="CENTER">
          <children>
             <ChoiceBox id="bevel-grey" fx:id="budgetList" layoutX="14.0" layoutY="38.0" prefWidth="150.0" stylesheets="@../Styles.css" />
             <Pane layoutX="13.0" layoutY="178.0" prefHeight="589.0" prefWidth="174.0" stylesheets="@../Styles.css">
@@ -75,7 +75,7 @@
       </AnchorPane>
    </left>
    <top>
-      <MenuBar fx:id="menuBar" stylesheets="@Styles.css" BorderPane.alignment="CENTER">
+      <MenuBar fx:id="menuBar" stylesheets="@../Styles.css" BorderPane.alignment="CENTER">
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
@@ -94,6 +94,7 @@
           <Menu mnemonicParsing="false" text="View">
             <items>
               <MenuItem fx:id="viewReportsMenuItem" mnemonicParsing="false" onAction="#onViewReportsAction" text="Reports" />
+                  <MenuItem fx:id="searchMenuItem" mnemonicParsing="false" onAction="#onViewSearchAction" text="Search" />
             </items>
           </Menu>
             <Menu mnemonicParsing="false" text="Help">
@@ -105,10 +106,10 @@
       </MenuBar>
    </top>
    <center>
-      <TabPane id="bevel-grey" fx:id="categoryTabPane" prefHeight="200.0" prefWidth="716.0" stylesheets="@Styles.css" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER" />
+      <TabPane id="bevel-grey" fx:id="categoryTabPane" prefHeight="200.0" prefWidth="716.0" stylesheets="@../Styles.css" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER" />
    </center>
    <right>
-      <TableView fx:id="categoryBudgetTable" prefHeight="635.0" prefWidth="297.0" style="-fx-background-color: #cce6e5;" stylesheets="@Styles.css" BorderPane.alignment="CENTER">
+      <TableView fx:id="categoryBudgetTable" prefHeight="635.0" prefWidth="297.0" style="-fx-background-color: #cce6e5;" stylesheets="@../Styles.css" BorderPane.alignment="CENTER">
          <columns>
             <TableColumn fx:id="categoryIdColumn" editable="false" prefWidth="75.0" text="Category ID" visible="false" />
             <TableColumn fx:id="categoryColumn" prefWidth="75.0" text="Category Name" />

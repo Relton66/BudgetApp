@@ -99,12 +99,12 @@ public class VendorDAO {
     }
     
     /**
-     * This method gets all the existing vendors.
+     * This method gets all the existing vendor names.
      * 
-     * @return a list of all vendors     
+     * @return a list of all vendor names
      */
-    public static ObservableList<String> getExistingVendors() {
-        LOG.info("Attempting to retrieve all existing vendors");
+    public static ObservableList<String> getExistingVendorNames() {
+        LOG.info("Attempting to retrieve all existing vendor names");
         ObservableList<String> existingVendorList = FXCollections.observableArrayList();
         String query;
         if(Main.USE_DERBY) {
@@ -119,9 +119,9 @@ public class VendorDAO {
                existingVendorList.add(results.getString("VENDOR_NAME"));
            }
         } catch (SQLException | ClassNotFoundException e) {
-            LOG.error("getExistingVendors has failed", e);            
+            LOG.error("getExistingVendorNames has failed", e);            
         }
-        LOG.info("Vendors retrieved successfully!");
+        LOG.info("Vendor names retrieved successfully!");
         return existingVendorList;
     }
     
@@ -229,5 +229,37 @@ public class VendorDAO {
             LOG.error("renameVendor has failed", e);            
         }
         LOG.info("Vendor ID {} was renamed successfully!", vendorId);
+    }
+    
+    /**
+     * This method gets all the existing vendors.
+     * 
+     * @return a list of all vendors     
+     */
+    public static List<Vendor> getExistingVendors() {
+        LOG.info("Attempting to retrieve all existing vendors");
+        List<Vendor> existingVendorList = new ArrayList<>();
+        String query;
+        if(Main.USE_DERBY) {
+            query = "SELECT * FROM vendor WHERE active = true ORDER BY vendor_name";
+        } else {
+            query = "SELECT * FROM vendor WHERE active = '1' ORDER BY vendor_name";
+        }
+        List<Object> parameters = new ArrayList<>();
+        try {
+           ResultSet results = DBUtil.dbExecuteSelectQuery(query, parameters);
+           while(results.next()) {
+               Vendor vendor = new Vendor();
+               vendor.setVendorId(results.getInt("VENDOR_ID"));
+               vendor.setVendorName(results.getString("VENDOR_NAME"));
+               vendor.setCategoryId(results.getInt("CATEGORY_ID"));
+               vendor.setActive(results.getBoolean("ACTIVE"));
+               existingVendorList.add(vendor);
+           }
+        } catch (SQLException | ClassNotFoundException e) {
+            LOG.error("getExistingVendors has failed", e);            
+        }
+        LOG.info("Vendors retrieved successfully!");
+        return existingVendorList;
     }
 }

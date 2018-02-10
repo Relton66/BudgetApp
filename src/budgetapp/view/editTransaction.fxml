@@ -13,9 +13,9 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="editTransBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="648.0" prefWidth="220.0" style="-fx-background-color: #cce6e5;" stylesheets="@Styles.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="budgetapp.controller.EditTransactionController">
+<BorderPane fx:id="editTransBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="648.0" prefWidth="220.0" style="-fx-background-color: #cce6e5;" stylesheets="@../Styles.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="budgetapp.controller.EditTransactionController">
    <center>
-      <AnchorPane prefHeight="794.0" prefWidth="220.0" stylesheets="@Styles.css" BorderPane.alignment="CENTER">
+      <AnchorPane prefHeight="794.0" prefWidth="220.0" stylesheets="@../Styles.css" BorderPane.alignment="CENTER">
          <children>
             <Pane layoutX="13.0" layoutY="45.0" prefHeight="589.0" prefWidth="174.0">
                <children>

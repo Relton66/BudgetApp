@@ -292,7 +292,7 @@ public class EditTransactionController implements Initializable {
     public void loadVendorList(String vendorName) {
         ObservableList<String> vendorsList = FXCollections.observableArrayList();
         vendorsList.add(Constants.LIST_NONE_OPTION);
-        vendorsList.addAll(VendorDAO.getExistingVendors());
+        vendorsList.addAll(VendorDAO.getExistingVendorNames());
         existingVendorList.setItems(vendorsList);
         existingVendorList.getSelectionModel().selectFirst();
         for(int i=0; i<existingVendorList.getItems().size(); i++) {

@@ -12,9 +12,9 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 
-<BorderPane fx:id="budgetBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="710.0" prefWidth="300.0" style="-fx-background-color: #cce6e5;" stylesheets="@Styles.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="budgetapp.controller.BudgetController">
+<BorderPane fx:id="budgetBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="710.0" prefWidth="300.0" style="-fx-background-color: #cce6e5;" stylesheets="@../Styles.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="budgetapp.controller.BudgetController">
    <top>
-      <AnchorPane prefHeight="396.0" prefWidth="300.0" stylesheets="@Styles.css" BorderPane.alignment="CENTER">
+      <AnchorPane prefHeight="396.0" prefWidth="300.0" stylesheets="@../Styles.css" BorderPane.alignment="CENTER">
          <children>
             <Label layoutX="14.0" layoutY="12.0" text="Budget Name" />
             <TextField id="bevel-grey" fx:id="nameField" layoutX="14.0" layoutY="29.0" stylesheets="@Styles.css" />
@@ -39,7 +39,7 @@
       </AnchorPane>
    </top>
    <center>
-      <TableView fx:id="categoryBudgetTable" editable="true" prefHeight="200.0" prefWidth="200.0" stylesheets="@Styles.css" BorderPane.alignment="CENTER">
+      <TableView fx:id="categoryBudgetTable" editable="true" prefHeight="200.0" prefWidth="200.0" stylesheets="@../Styles.css" BorderPane.alignment="CENTER">
         <columns>
             <TableColumn fx:id="categoryIdColumn" editable="false" onEditCommit="#onCategoryEditCommit" prefWidth="75.0" text="Category ID" visible="false" />
           <TableColumn fx:id="categoryColumn" onEditCommit="#onCategoryEditCommit" prefWidth="75.0" text="Category Name" />
@@ -51,7 +51,7 @@
       </TableView>
    </center>
    <bottom>
-      <HBox alignment="CENTER" prefHeight="65.0" prefWidth="300.0" stylesheets="@Styles.css" BorderPane.alignment="CENTER">
+      <HBox alignment="CENTER" prefHeight="65.0" prefWidth="300.0" stylesheets="@../Styles.css" BorderPane.alignment="CENTER">
          <children>
             <AnchorPane prefHeight="65.0" prefWidth="296.0">
                <children>

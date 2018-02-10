@@ -1,6 +1,7 @@
 package budgetapp.dao;
 
 import budgetapp.Main;
+import budgetapp.model.Method;
 import budgetapp.model.MethodTableEntry;
 import budgetapp.util.DBUtil;
 import java.sql.ResultSet;
@@ -43,12 +44,12 @@ public class MethodDAO {
     }
     
     /**
-     * This method gets all the methods.
+     * This method gets all the method types.
      * 
-     * @return the list of methods     
+     * @return the list of method types
      */
-    public static List<MethodTableEntry> getAllMethods() {
-        LOG.info("Attempting to get all methods");
+    public static List<MethodTableEntry> getAllMethodTypes() {
+        LOG.info("Attempting to get all method types");
         List<MethodTableEntry> methodEntriesList = new ArrayList<>();
         String query = "SELECT method_type, active FROM method ORDER BY active, method_type";
         List<Object> parameters = new ArrayList<>();
@@ -58,9 +59,9 @@ public class MethodDAO {
                 MethodTableEntry methodEntry = new MethodTableEntry(results.getString("METHOD_TYPE"), results.getBoolean("ACTIVE"));
                 methodEntriesList.add(methodEntry);
             }
-            LOG.info("Retrieved methods successfully");
+            LOG.info("Retrieved method types successfully");
         } catch (SQLException | ClassNotFoundException e) {
-            LOG.error("getAllMethods has failed", e);           
+            LOG.error("getAllMethodTypes has failed", e);           
         }
         return methodEntriesList;
     }
@@ -129,5 +130,31 @@ public class MethodDAO {
             LOG.error("Method {} has failed to update", methodEntry.getMethodType(), e);            
         }
         LOG.info("Method {} was updated successfully", methodEntry.getMethodType());
-    }   
+    }
+    
+    /**
+     * This method gets all the methods.
+     * 
+     * @return the list of methods
+     */
+    public static List<Method> getAllMethods() {
+        LOG.info("Attempting to get all methods");
+        List<Method> methodList = new ArrayList<>();
+        String query = "SELECT * FROM method ORDER BY method_type";
+        List<Object> parameters = new ArrayList<>();
+        try {
+            ResultSet results = DBUtil.dbExecuteSelectQuery(query, parameters);
+            while(results.next()) {
+                Method method = new Method();
+                method.setMethodId(results.getInt("METHOD_ID"));
+                method.setMethodType(results.getString("METHOD_TYPE"));
+                method.setActive(results.getBoolean("ACTIVE"));                
+                methodList.add(method);
+            }
+            LOG.info("Retrieved methods successfully");
+        } catch (SQLException | ClassNotFoundException e) {
+            LOG.error("getAllMethods has failed", e);           
+        }
+        return methodList;
+    }
 }

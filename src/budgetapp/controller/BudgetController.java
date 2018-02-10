@@ -375,7 +375,7 @@ public class BudgetController implements Initializable {
      * with the new name.
      */
     private void saveNewCategories() {
-        List<String> existingCategories = CategoryDAO.getExistingCategories();
+        List<String> existingCategories = CategoryDAO.getExistingCategoryNames();
         for(CategoryBudgetTableEntry entry : categoryTableList) {
             // First we make sure the current entry doesn't exist in our category list
             if(!existingCategories.contains(entry.getCategoryName())) {

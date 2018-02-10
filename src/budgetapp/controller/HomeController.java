@@ -819,6 +819,25 @@ public class HomeController implements Initializable {
     }
     
     /**
+     * This method handles the view search menu item.
+     * 
+     * @throws IOException - the IO exception
+     */
+    @FXML
+    public void onViewSearchAction() throws IOException {
+        Stage stage = new Stage();
+        stage.setTitle("Search");
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(Main.class.getResource("view/search.fxml"));
+        BorderPane border = (BorderPane) loader.load();
+        //SearchController sController = loader.getController();       
+        Scene scene = new Scene(border);
+        stage.setScene(scene);
+        stage.setAlwaysOnTop(true);
+        stage.show();
+    }
+    
+    /**
      * This method handles the view reports menu item.
      * 
      * @throws IOException - the IO exception

@@ -75,12 +75,12 @@ public class CategoryDAO {
     }
     
     /**
-     * This method gets all the existing categories.
+     * This method gets all the existing category names.
      * 
-     * @return a list of all categories     
+     * @return a list of all category names    
      */
-    public static List<String> getExistingCategories() {
-        LOG.info("Attempting to retrieve all existing categories");
+    public static List<String> getExistingCategoryNames() {
+        LOG.info("Attempting to retrieve all existing category names");
         List<String> existingCategoriesList = FXCollections.observableArrayList();
         String query = "SELECT * FROM category ORDER BY category_name";
         List<Object> parameters = new ArrayList<>();
@@ -90,9 +90,9 @@ public class CategoryDAO {
                existingCategoriesList.add(results.getString("CATEGORY_NAME"));
            }
         } catch (SQLException | ClassNotFoundException e) {
-            LOG.error("getExistingCategories has failed", e);            
+            LOG.error("getExistingCategoryNames has failed", e);            
         }
-        LOG.info("Categories retrieved successfully!");
+        LOG.info("Category names retrieved successfully!");
         return existingCategoriesList;
     }
     
@@ -142,5 +142,31 @@ public class CategoryDAO {
             LOG.error("updateCategoryName has failed", e);           
         }
         LOG.info("Category ID {} was updated successfully to new name {}", categoryId, categoryName);
+    }
+    
+    /**
+     * This method gets all the existing categories.
+     * 
+     * @return a list of all categories     
+     */
+    public static List<Category> getExistingCategories() {
+        LOG.info("Attempting to retrieve all existing categories");
+        List<Category> existingCategoriesList = FXCollections.observableArrayList();
+        String query = "SELECT * FROM category ORDER BY category_name";
+        List<Object> parameters = new ArrayList<>();
+        try {
+           ResultSet results = DBUtil.dbExecuteSelectQuery(query, parameters);
+           while(results.next()) {
+               Category category = new Category();
+               category.setCategoryId(results.getInt("CATEGORY_ID"));
+               category.setCategoryName(results.getString("CATEGORY_NAME"));
+               category.setActive(results.getBoolean("ACTIVE"));
+               existingCategoriesList.add(category);
+           }
+        } catch (SQLException | ClassNotFoundException e) {
+            LOG.error("getExistingCategories has failed", e);            
+        }
+        LOG.info("Categories retrieved successfully!");
+        return existingCategoriesList;
     }
 }

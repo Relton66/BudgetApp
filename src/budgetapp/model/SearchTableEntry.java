@@ -4,12 +4,12 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 /**
- * This class represents the objects in the transaction table.
+ * This class represents the objects in the search table.
  */
-public class TransactionTableEntry {
+public class SearchTableEntry {
     
-    /** The transaction ID. */
-    private final SimpleStringProperty transactionId;
+    /** The budget name. */
+    private final SimpleStringProperty budgetName;
     /** The transaction date. */
     private final SimpleStringProperty transDate;
     /** The vendor name. */
@@ -28,7 +28,7 @@ public class TransactionTableEntry {
     /**
      * The constructor.
      * 
-     * @param transactionId - the transaction ID
+     * @param budgetName - the budget name
      * @param transDate - the transaction date
      * @param vendorName - the vendor name
      * @param amount - the amount
@@ -37,9 +37,9 @@ public class TransactionTableEntry {
      * @param methodType - the method type
      * @param comments - the comments
      */
-    public TransactionTableEntry(String transactionId, String transDate, String vendorName,
+    public SearchTableEntry(String budgetName, String transDate, String vendorName,
             String amount, String income, String categoryName, String methodType, String comments) {
-        this.transactionId = new SimpleStringProperty(transactionId);
+        this.budgetName = new SimpleStringProperty(budgetName);
         this.transDate = new SimpleStringProperty(transDate);
         this.vendorName = new SimpleStringProperty(vendorName);
         this.amount = new SimpleStringProperty(amount);
@@ -48,32 +48,32 @@ public class TransactionTableEntry {
         this.methodType = new SimpleStringProperty(methodType);
         this.comments = new SimpleStringProperty(comments);
     }
-
+    
     /**
-     * Gets transaction ID value.
+     * Gets budget name value.
      * 
-     * @return transactionId value
+     * @return budgetName value
      */
-    public final String getTransactionId() {
-        return transactionId.get();
+    public final String getBudgetName() {
+        return budgetName.get();
     }
 
     /**
-     * Sets transaction ID value.
+     * Sets budget name value.
      * 
-     * @param transactionId - the transaction ID to set.
+     * @param budgetName - the budget name to set.
      */
-    public final void setTransactionId(String transactionId) {
-        this.transactionId.set(transactionId);
+    public final void setBudgetName(String budgetName) {
+        this.budgetName.set(budgetName);
     }
     
     /**
-     * Gets transaction ID property.
+     * Gets budget name property.
      * 
-     * @return transactionId property
+     * @return budgetName property
      */
-    public SimpleStringProperty transactionIdProperty() {
-        return transactionId;
+    public SimpleStringProperty budgetNameProperty() {
+        return budgetName;
     }
     
     /**
@@ -263,5 +263,5 @@ public class TransactionTableEntry {
      */
     public StringProperty commentsProperty() {
         return comments;
-    }    
+    }
 }

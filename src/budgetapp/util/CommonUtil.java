@@ -92,7 +92,7 @@ public class CommonUtil {
         if(addNone) {
             vendorsList.add(Constants.LIST_NONE_OPTION);
         }
-        vendorsList.addAll(VendorDAO.getExistingVendors());
+        vendorsList.addAll(VendorDAO.getExistingVendorNames());
         existingVendorList.setItems(vendorsList);
         existingVendorList.getSelectionModel().selectFirst();
     }

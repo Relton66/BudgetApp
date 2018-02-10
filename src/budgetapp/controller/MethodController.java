@@ -70,7 +70,7 @@ public class MethodController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {       
-        methodList = MethodDAO.getAllMethods();
+        methodList = MethodDAO.getAllMethodTypes();
         populateMethodsTable();        
     }
     
@@ -118,7 +118,7 @@ public class MethodController implements Initializable {
      * This method handles the save button action.    
      */
     public void onSaveBtnAction() {
-        List<MethodTableEntry> savedMethodsList = MethodDAO.getAllMethods();        
+        List<MethodTableEntry> savedMethodsList = MethodDAO.getAllMethodTypes();        
         for(MethodTableEntry currentMethodEntry : methodList) {
             boolean newMethod = true;
             for(MethodTableEntry savedMethodEntry : savedMethodsList) {
