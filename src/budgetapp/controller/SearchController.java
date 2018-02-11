@@ -10,6 +10,7 @@ import budgetapp.model.SearchTableEntry;
 import budgetapp.model.Vendor;
 import budgetapp.util.FileUtil;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.sql.Date;
 import java.util.ArrayList;
@@ -161,10 +162,9 @@ public class SearchController implements Initializable {
         for(Category category : CategoryDAO.getExistingCategories()) {
             categories.add(category.getCategoryName());
             categoryMap.put(category.getCategoryName(), category.getCategoryId());
-        }       
+        }    
         categoryList.setItems(categories);
     }
-    
     
     /**
      * This method handles the Search button action.
@@ -212,9 +212,9 @@ public class SearchController implements Initializable {
     private List<Integer> generateVendorIdList() {
         List<Integer> vendorIdList = new ArrayList<>();
         List<String> selectedVendors = vendorList.getSelectionModel().getSelectedItems();
-        for(String vendor : selectedVendors) {
-            vendorIdList.add(vendorMap.get(vendor));            
-        }
+        selectedVendors.forEach((vendor) -> {
+            vendorIdList.add(vendorMap.get(vendor));
+        });
         return vendorIdList;
     }
     
@@ -226,9 +226,9 @@ public class SearchController implements Initializable {
     private List<Integer> generateMethodIdList() {
         List<Integer> methodIdList = new ArrayList<>();
         List<String> selectedMethods = methodList.getSelectionModel().getSelectedItems();
-        for(String method : selectedMethods) {
+        selectedMethods.forEach((method) -> {
             methodIdList.add(methodMap.get(method));
-        }
+        });
         return methodIdList;
     }
     
@@ -240,9 +240,9 @@ public class SearchController implements Initializable {
     private List<Integer> generateCategoryIdList() {
         List<Integer> categoryIdList = new ArrayList<>();
         List<String> selectedCategories = categoryList.getSelectionModel().getSelectedItems();
-        for(String category : selectedCategories) {
+        selectedCategories.forEach((category) -> {
             categoryIdList.add(categoryMap.get(category));
-        }
+        });
         return categoryIdList;
     }
     
@@ -285,7 +285,11 @@ public class SearchController implements Initializable {
             fileChooser.getExtensionFilters().add(extFilter);
             File file = fileChooser.showSaveDialog((Stage) searchBorderPane.getScene().getWindow());
             if (file != null) {
-                FileUtil.exportSearchToExcel(file, searchTable.getItems());
+                try {
+                    FileUtil.exportSearchToExcel(file, searchTable.getItems());
+                } catch (IOException ex) {
+                    LOG.error("IO Exception in onExportBtnAction", ex);
+                }
             }
         }
     }

@@ -119,9 +119,9 @@ public class VendorController implements Initializable {
         // We need a list of strings for the choicebox
         ObservableList<String> currentCategoryNameList = FXCollections.observableArrayList(); 
         if(!currentCategoryList.isEmpty()) {
-            for(Category category : currentCategoryList) {
+            currentCategoryList.forEach((category) -> {
                 currentCategoryNameList.add(category.getCategoryName());
-            }
+            });
             categoryList.setItems(currentCategoryNameList);
             categoryList.getSelectionModel().selectFirst();
         }

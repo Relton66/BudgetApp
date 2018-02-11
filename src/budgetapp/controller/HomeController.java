@@ -14,7 +14,9 @@ import budgetapp.model.Transaction;
 import budgetapp.model.TransactionTableEntry;
 import budgetapp.util.CommonUtil;
 import budgetapp.util.Constants;
+import budgetapp.util.FileUtil;
 import budgetapp.util.StringUtil;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Date;
@@ -56,12 +58,13 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import org.slf4j.LoggerFactory;
 
 /**
- * The transaction controller class.
+ * The home (transaction) controller class.
  */
 public class HomeController implements Initializable {
     
@@ -135,7 +138,9 @@ public class HomeController implements Initializable {
     /** The current categories list. */
     private List<Category> currentCategoryList = new ArrayList<>();
     /** The list of items in the category budget table. */
-    private List<CategoryBudgetTableEntry> categoryBudgetList = new ArrayList<>();    
+    private List<CategoryBudgetTableEntry> categoryBudgetList = new ArrayList<>();
+    /** The all transactions table. */
+    private TableView allTransTable = new TableView();
     /** The logger. */
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(HomeController.class);
     
@@ -203,7 +208,6 @@ public class HomeController implements Initializable {
             existingVendorList.getSelectionModel().selectFirst();
             vendorCategoryField.setText("");
         });
-        
     }
     
     /**
@@ -237,9 +241,9 @@ public class HomeController implements Initializable {
         // We need a list of strings for the choicebox
         ObservableList<String> currentCategoryNameList = FXCollections.observableArrayList(); 
         if(!currentCategoryList.isEmpty()) {
-            for(Category category : currentCategoryList) {
+            currentCategoryList.forEach((category) -> {
                 currentCategoryNameList.add(category.getCategoryName());
-            }
+            });
             categoryList.setItems(currentCategoryNameList);
             categoryList.getSelectionModel().selectFirst();
             populateCategoryBudgetTable(selectedBudgetId);
@@ -301,7 +305,7 @@ public class HomeController implements Initializable {
             populateCategoryBudgetTable(selectedBudgetId);
         }
         return !existingBudgetList.isEmpty();
-    }
+    }   
     
     /**
      * This method loads all the active method types.     
@@ -528,7 +532,7 @@ public class HomeController implements Initializable {
         categoryTabPane.getTabs().clear();
         // Set up the All Transactions tab
         Tab tab = new Tab("All");
-        TableView allTransTable = buildTransactionTable(budgetId, 0, false);
+        allTransTable = buildTransactionTable(budgetId, 0, false);
         tab.setContent(allTransTable);
         categoryTabPane.getTabs().add(tab);
         // Set up the category tabs
@@ -731,7 +735,11 @@ public class HomeController implements Initializable {
      */
     @FXML
     public void onEditCategoryAction() throws IOException {
-        
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("Coming Soon!");
+        alert.setHeaderText(null);
+        alert.setContentText("This feature is not implemented yet.");
+        alert.showAndWait(); 
     }
     
     /**
@@ -790,7 +798,7 @@ public class HomeController implements Initializable {
     @FXML
     public void onAboutMenu() {
         Alert alert = new Alert(AlertType.INFORMATION);
-        alert.setTitle("Elton Budget App v1.0");
+        alert.setTitle("Budget App v1.0");
         alert.setHeaderText(null);
         alert.setContentText("This applicatoin allows you to manage a budget and keep track of "
                 + "the balances per category.");
@@ -799,21 +807,27 @@ public class HomeController implements Initializable {
     
     /**
      * This method handles the save to file menu item.
+     * 
+     * @throws IOException - the IO exception
      */
     @FXML
-    public void onSaveToFileAction() {
-        Alert alert = new Alert(AlertType.INFORMATION);
-        alert.setTitle("Coming Soon!");
-        alert.setHeaderText(null);
-        alert.setContentText("This feature is not implemented yet.");
-        alert.showAndWait(); 
-       /* Stage stage = (Stage) homeBorderPane.getScene().getWindow();
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Save Budget");
-        File file = fileChooser.showSaveDialog(stage);
-        if (file != null) {
-            
-        } */
+    public void onSaveToFileAction() throws IOException {
+        if(allTransTable.getItems().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("There is no data to export.");
+            alert.showAndWait();
+        } else {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save All Transactions");
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Excel Files", "*.xls");
+            fileChooser.getExtensionFilters().add(extFilter);
+            File file = fileChooser.showSaveDialog((Stage) homeBorderPane.getScene().getWindow());
+            if (file != null) {
+                FileUtil.exportTransactionsToExcelFile(file, allTransTable.getItems());
+            }
+        }   
     }
     
     /**

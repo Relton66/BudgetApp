@@ -235,9 +235,9 @@ public class BudgetController implements Initializable {
     private void calculateBudgetTotal() {
         budgetTotalAmount = 0;        
         if(StringUtil.isValidDollarAmount(startBalance.getText())) {
-            for(CategoryBudgetTableEntry categoryBudget : categoryTableList) {
+            categoryTableList.forEach((categoryBudget) -> {
                 budgetTotalAmount += StringUtil.convertFromDollarFormat(categoryBudget.getBudgetStarting());
-            }
+            });
             if(budgetTotalAmount >  StringUtil.convertFromDollarFormat(startBalance.getText())) {
                 budgetTotalField.setStyle("-fx-text-inner-color: red;");
             } else {
@@ -272,9 +272,9 @@ public class BudgetController implements Initializable {
      */
     private boolean categoryAlreadyExists(String categoryName) {
         List<String> currentCategoryList = new ArrayList<>();
-        for(CategoryBudgetTableEntry entry : categoryTableList) {
+        categoryTableList.forEach((entry) -> {
             currentCategoryList.add(entry.getCategoryName().toUpperCase(Locale.ENGLISH));
-        }
+        });
         return currentCategoryList.contains(categoryName.toUpperCase(Locale.ENGLISH));
     }
     
@@ -313,11 +313,11 @@ public class BudgetController implements Initializable {
      * @param budgetId - the budget ID   
      */
     private void saveCategoryBudgets(int budgetId) {
-        for(CategoryBudgetTableEntry entry : categoryTableList) {
+        categoryTableList.forEach((entry) -> {
             CategoryBudgetDAO.saveCategoryBudget(budgetId, CategoryDAO.findCategoryByName(
-                entry.getCategoryName()).getCategoryId(), 
-                StringUtil.convertFromDollarFormat(entry.getBudgetStarting()));
-        }
+                    entry.getCategoryName()).getCategoryId(),
+                    StringUtil.convertFromDollarFormat(entry.getBudgetStarting()));
+        });
     }
     
     /**
@@ -461,7 +461,8 @@ public class BudgetController implements Initializable {
                 .stream().map(String::toUpperCase).collect(Collectors.toList());
         boolean isUnique = !budgetNamesList.contains(budgetName.toUpperCase(Locale.ENGLISH));        
         if(!isUnique && isEdit) {
-            isUnique = originalBudgetName.toUpperCase().equalsIgnoreCase(budgetName.toUpperCase(Locale.ENGLISH));
+            isUnique = originalBudgetName.toUpperCase(Locale.ENGLISH).equalsIgnoreCase(
+                    budgetName.toUpperCase(Locale.ENGLISH));
         }
         return isUnique;
     }

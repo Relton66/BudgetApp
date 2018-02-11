@@ -262,19 +262,12 @@ public class DBUtil {
      * @throws SQLException - the SQL exception
      */
     private static void executeQuery(String query) throws SQLException {
-        Statement stmt = null;
-        try {
-            //stmt = conn.prepareStatement(query);
-            stmt = conn.createStatement();
+        try (Statement stmt = conn.createStatement()) {
             LOG.debug("Query to execute is: " + query);
             stmt.execute(query);
             LOG.debug("Query successful.");
         } catch (SQLException e) {
             LOG.error("Problem occurred at executeQuery", e);
-        } finally {
-            if (stmt != null) {
-                stmt.close();
-            }
         }
     }
 }
