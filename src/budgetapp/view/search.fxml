@@ -29,9 +29,9 @@
             <ListView id="bevel-grey" fx:id="categoryList" layoutX="211.0" layoutY="127.0" prefHeight="165.0" prefWidth="127.0" stylesheets="@Styles.css" />
             <ListView id="bevel-grey" fx:id="methodList" layoutX="376.0" layoutY="127.0" prefHeight="165.0" prefWidth="127.0" stylesheets="@Styles.css" />
             <TextArea id="bevel-grey" fx:id="commentArea" layoutX="539.0" layoutY="210.0" prefHeight="78.0" prefWidth="178.0" stylesheets="@Styles.css" />
-            <Button id="bevel-grey" fx:id="searchBtn" defaultButton="true" layoutX="189.0" layoutY="314.0" mnemonicParsing="false" onAction="#onSearchBtnAction" stylesheets="@Styles.css" text="Search" />
-            <Button id="bevel-grey" fx:id="resetBtn" layoutX="252.0" layoutY="314.0" mnemonicParsing="false" onAction="#onResetBtnAction" stylesheets="@Styles.css" text="Reset Filters" />
-            <Button id="bevel-grey" fx:id="closeBtn" layoutX="531.0" layoutY="314.0" mnemonicParsing="false" onAction="#onCloseBtnAction" stylesheets="@Styles.css" text="Close" />
+            <Button id="bevel-grey-btn" fx:id="searchBtn" defaultButton="true" layoutX="189.0" layoutY="314.0" mnemonicParsing="false" onAction="#onSearchBtnAction" stylesheets="@Styles.css" text="Search" />
+            <Button id="bevel-grey-btn" fx:id="resetBtn" layoutX="252.0" layoutY="314.0" mnemonicParsing="false" onAction="#onResetBtnAction" stylesheets="@Styles.css" text="Reset Filters" />
+            <Button id="bevel-grey-btn" fx:id="closeBtn" layoutX="531.0" layoutY="314.0" mnemonicParsing="false" onAction="#onCloseBtnAction" stylesheets="@Styles.css" text="Close" />
             <Label layoutX="37.0" layoutY="49.0" stylesheets="@Styles.css" text="Start Date" />
             <Label layoutX="211.0" layoutY="49.0" stylesheets="@Styles.css" text="End Date" />
             <Label layoutX="376.0" layoutY="49.0" stylesheets="@Styles.css" text="Amount" />
@@ -41,8 +41,8 @@
             <Label layoutX="376.0" layoutY="110.0" stylesheets="@Styles.css" text="Methods" />
             <RadioButton fx:id="incomeOnlyRadioBtn" layoutX="527.0" layoutY="70.0" mnemonicParsing="false" text="Income Only" />
             <RadioButton fx:id="expenseOnlyRadioBtn" layoutX="628.0" layoutY="70.0" mnemonicParsing="false" text="Expense Only" />
-            <Button id="bevel-grey" fx:id="clearTableBtn" layoutX="342.0" layoutY="314.0" mnemonicParsing="false" onAction="#onClearTableBtnAction" stylesheets="@Styles.css" text="Clear Table" />
-            <Button id="bevel-grey" fx:id="exportBtn" layoutX="428.0" layoutY="314.0" mnemonicParsing="false" onAction="#onExportBtnAction" stylesheets="@Styles.css" text="Export Results" />
+            <Button id="bevel-grey-btn" fx:id="clearTableBtn" layoutX="342.0" layoutY="314.0" mnemonicParsing="false" onAction="#onClearTableBtnAction" stylesheets="@Styles.css" text="Clear Table" />
+            <Button id="bevel-grey-btn" fx:id="exportBtn" layoutX="428.0" layoutY="314.0" mnemonicParsing="false" onAction="#onExportBtnAction" stylesheets="@Styles.css" text="Export Results" />
          </children>
       </AnchorPane>
    </top>

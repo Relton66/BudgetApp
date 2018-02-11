@@ -24,8 +24,8 @@
                   <DatePicker id="bevel-grey" fx:id="transDateField" layoutY="94.0" stylesheets="@Styles.css" />
                   <ChoiceBox id="bevel-grey" fx:id="existingVendorList" layoutX="1.0" layoutY="150.0" prefWidth="150.0" stylesheets="@Styles.css" />
                   <TextField id="bevel-grey" fx:id="newVendorField" layoutX="1.0" layoutY="288.0" stylesheets="@Styles.css" />
-                  <Button id="bevel-grey" fx:id="submitBtn" defaultButton="true" layoutX="31.0" layoutY="573.0" mnemonicParsing="false" onAction="#onSubmitBtnAction" styleClass="#green" stylesheets="@Styles.css" text="Submit" />
-                  <Button id="bevel-grey" fx:id="closeBtn" layoutX="95.0" layoutY="573.0" mnemonicParsing="false" onAction="#onCloseBtnAction" stylesheets="@Styles.css" text="Close" />
+                  <Button id="bevel-grey-btn" fx:id="submitBtn" defaultButton="true" layoutX="31.0" layoutY="573.0" mnemonicParsing="false" onAction="#onSubmitBtnAction" styleClass="#green" stylesheets="@Styles.css" text="Submit" />
+                  <Button id="bevel-grey-btn" fx:id="closeBtn" layoutX="95.0" layoutY="573.0" mnemonicParsing="false" onAction="#onCloseBtnAction" stylesheets="@Styles.css" text="Close" />
                   <Label layoutX="2.0" stylesheets="@Styles.css" text="Amount:" />
                   <Label layoutX="2.0" layoutY="133.0" stylesheets="@Styles.css" text="Select Existing Vendor:" />
                   <Label layoutX="62.0" layoutY="237.0" stylesheets="@Styles.css" text="OR" />
@@ -42,7 +42,7 @@
                   <TextArea id="bevel-grey" fx:id="commentArea" layoutY="455.0" prefHeight="62.0" prefWidth="164.0" stylesheets="@Styles.css" wrapText="true" />
                   <Label layoutY="437.0" stylesheets="@Styles.css" text="Comments:" />
                   <Label layoutY="184.0" stylesheets="@Styles.css" text="Existing Vendor Category:" />
-                  <Button id="bevel-grey" fx:id="editCategoryBtn" layoutX="153.0" layoutY="201.0" mnemonicParsing="false" onAction="#onEditCategoryBtnAction" stylesheets="@Styles.css" text="Edit" />
+                  <Button id="bevel-grey-btn" fx:id="editCategoryBtn" layoutX="153.0" layoutY="201.0" mnemonicParsing="false" onAction="#onEditCategoryBtnAction" stylesheets="@Styles.css" text="Edit" />
                   <TextField id="bevel-grey" fx:id="vendorCategoryField" editable="false" layoutY="201.0" stylesheets="@Styles.css" />
                </children>
             </Pane>

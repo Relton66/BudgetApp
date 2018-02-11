@@ -16,7 +16,7 @@
          <children>
             <Label layoutX="14.0" layoutY="16.0" text="Enter Method Type" />
             <TextField id="bevel-grey" fx:id="methodTypeField" layoutX="14.0" layoutY="39.0" stylesheets="@Styles.css" />
-            <Button id="bevel-grey" fx:id="addMethodBtn" layoutX="174.0" layoutY="39.0" mnemonicParsing="false" onAction="#onAddBtnAction" stylesheets="@Styles.css" text="Add" />
+            <Button id="bevel-grey-btn" fx:id="addMethodBtn" layoutX="174.0" layoutY="39.0" mnemonicParsing="false" onAction="#onAddBtnAction" stylesheets="@Styles.css" text="Add" />
             <Label fx:id="statusMessage" layoutX="15.0" layoutY="71.0" prefHeight="17.0" prefWidth="256.0" />
          </children>
       </AnchorPane>
@@ -35,12 +35,12 @@
    <bottom>
       <HBox alignment="CENTER" prefHeight="37.0" prefWidth="278.0" stylesheets="@Styles.css" BorderPane.alignment="CENTER">
          <children>
-            <Button id="bevel-grey" fx:id="saveBtn" mnemonicParsing="false" onAction="#onSaveBtnAction" stylesheets="@Styles.css" text="Save">
+            <Button id="bevel-grey-btn" fx:id="saveBtn" mnemonicParsing="false" onAction="#onSaveBtnAction" stylesheets="@Styles.css" text="Save">
                <HBox.margin>
                   <Insets right="10.0" />
                </HBox.margin>
             </Button>
-            <Button id="bevel-grey" fx:id="closeBtn" mnemonicParsing="false" onAction="#onCloseBtnAction" stylesheets="@Styles.css" text="Close" />
+            <Button id="bevel-grey-btn" fx:id="closeBtn" mnemonicParsing="false" onAction="#onCloseBtnAction" stylesheets="@Styles.css" text="Close" />
          </children>
       </HBox>
    </bottom>

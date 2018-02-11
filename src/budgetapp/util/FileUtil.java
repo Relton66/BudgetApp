@@ -38,12 +38,13 @@ public class FileUtil {
     private static void createHeaderRow(Sheet sheet, List<String> headerNames) {
         // Create the first row
         Row row = sheet.createRow(0);
+        // Create the style
+        CellStyle headerStyle = getHeaderStyle();
         // Loop through header names and build the cells
         for(int i=0; i<headerNames.size(); i++) {
             Cell cell = row.createCell(i, CellType.STRING);
             cell.setCellValue(headerNames.get(i));
-            cell.setCellStyle(getHeaderStyle());
-            sheet.autoSizeColumn(i);
+            cell.setCellStyle(headerStyle);            
         }
     }
     
@@ -121,6 +122,9 @@ public class FileUtil {
         final List<String> headerNames = Arrays.asList("Budget Name", "Transaction Date", "Vendor Name",
                 "Amount", "Category Name", "Method Type", "Comments");
         
+        CellStyle stringStyle = getStringStyle();
+        CellStyle numberStyle = getNumberStyle();
+        
         Sheet sheet = book.createSheet("BudgetApp Data");
         createHeaderRow(sheet, headerNames);
         
@@ -129,31 +133,31 @@ public class FileUtil {
             Row row = sheet.createRow(i+1);
             Cell budgetCell = row.createCell(BUDGET_NAME_COL, CellType.STRING);
             budgetCell.setCellValue(entry.getBudgetName());
-            budgetCell.setCellStyle(getStringStyle());
+            budgetCell.setCellStyle(stringStyle);
             
             Cell dateCell = row.createCell(TRANS_DATE_COL, CellType.STRING);
             dateCell.setCellValue(entry.getTransDate());
-            dateCell.setCellStyle(getNumberStyle());
+            dateCell.setCellStyle(numberStyle);
             
             Cell vendorCell = row.createCell(VENDOR_NAME_COL, CellType.STRING);
             vendorCell.setCellValue(entry.getVendorName());
-            vendorCell.setCellStyle(getStringStyle());
+            vendorCell.setCellStyle(stringStyle);
             
             Cell amountCell = row.createCell(AMOUNT_COL, CellType.STRING);
             amountCell.setCellValue(entry.getAmount());
-            amountCell.setCellStyle(getNumberStyle());
+            amountCell.setCellStyle(numberStyle);
             
             Cell categoryCell = row.createCell(CATEGORY_NAME_COL, CellType.STRING);
             categoryCell.setCellValue(entry.getCategoryName());
-            categoryCell.setCellStyle(getStringStyle());
+            categoryCell.setCellStyle(stringStyle);
             
             Cell methodCell = row.createCell(METHOD_TYPE_COL, CellType.STRING);
             methodCell.setCellValue(entry.getMethodType());
-            methodCell.setCellStyle(getStringStyle());
+            methodCell.setCellStyle(stringStyle);
             
             Cell commentsCell = row.createCell(COMMENTS_COL, CellType.STRING);
             commentsCell.setCellValue(entry.getComments());
-            commentsCell.setCellStyle(getStringStyle());        
+            commentsCell.setCellStyle(stringStyle);        
         }
         
         sheet.autoSizeColumn(BUDGET_NAME_COL);

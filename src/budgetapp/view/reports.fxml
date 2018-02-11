@@ -19,7 +19,7 @@
             <DatePicker id="bevel-grey" fx:id="startDateField" disable="true" layoutX="13.0" layoutY="94.0" stylesheets="@Styles.css" />
             <Label layoutX="13.0" layoutY="126.0" text="End Date:" />
             <DatePicker id="bevel-grey" fx:id="endDateField" disable="true" layoutX="14.0" layoutY="147.0" stylesheets="@Styles.css" />
-            <Button id="bevel-grey" fx:id="onGenerateBtn" layoutX="204.0" layoutY="147.0" mnemonicParsing="false" onAction="#onGenerateBtnAction" stylesheets="@Styles.css" text="Generate Report" />
+            <Button id="bevel-grey-btn" fx:id="onGenerateBtn" layoutX="204.0" layoutY="147.0" mnemonicParsing="false" onAction="#onGenerateBtnAction" stylesheets="@Styles.css" text="Generate Report" />
             <Label fx:id="reportStatusMessage" layoutX="204.0" layoutY="178.0" />
          </children>
       </AnchorPane>
@@ -34,7 +34,7 @@
    <bottom>
       <HBox alignment="CENTER" prefHeight="47.0" prefWidth="700.0" stylesheets="@Styles.css" BorderPane.alignment="CENTER">
          <children>
-            <Button id="bevel-grey" fx:id="closeBtn" alignment="CENTER" mnemonicParsing="false" onAction="#onCloseBtnAction" stylesheets="@Styles.css" text="Close" />
+            <Button id="bevel-grey-btn" fx:id="closeBtn" alignment="CENTER" mnemonicParsing="false" onAction="#onCloseBtnAction" stylesheets="@Styles.css" text="Close" />
          </children>
       </HBox>
    </bottom>
