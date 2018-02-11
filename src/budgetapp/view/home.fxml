@@ -19,63 +19,63 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="homeBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="811.0" prefWidth="1100.0" style="-fx-background-color: #cce6e5;" stylesheets="@../Styles.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="budgetapp.controller.HomeController">
+<BorderPane fx:id="homeBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="811.0" prefWidth="1100.0" style="-fx-background-color: #cce6e5;" stylesheets="@Styles.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="budgetapp.controller.HomeController">
    <left>
-      <AnchorPane prefHeight="200.0" prefWidth="200.0" stylesheets="@../Styles.css" BorderPane.alignment="CENTER">
+      <AnchorPane prefHeight="200.0" prefWidth="200.0" stylesheets="@Styles.css" BorderPane.alignment="CENTER">
          <children>
-            <ChoiceBox id="bevel-grey" fx:id="budgetList" layoutX="14.0" layoutY="38.0" prefWidth="150.0" stylesheets="@../Styles.css" />
-            <Pane layoutX="13.0" layoutY="178.0" prefHeight="589.0" prefWidth="174.0" stylesheets="@../Styles.css">
+            <ChoiceBox id="bevel-grey" fx:id="budgetList" layoutX="14.0" layoutY="38.0" prefWidth="150.0" stylesheets="@Styles.css" />
+            <Pane layoutX="13.0" layoutY="178.0" prefHeight="589.0" prefWidth="174.0" stylesheets="@Styles.css">
                <children>
-                  <TextField id="bevel-grey" fx:id="amountField" layoutX="1.0" layoutY="19.0" stylesheets="@../Styles.css" />
-                  <CheckBox fx:id="incomeCheckBoxField" layoutX="1.0" layoutY="48.0" mnemonicParsing="false" stylesheets="@../Styles.css" text="Income?" />
-                  <DatePicker id="bevel-grey" fx:id="transDateField" layoutY="94.0" stylesheets="@../Styles.css" />
-                  <ChoiceBox id="bevel-grey" fx:id="existingVendorList" layoutX="1.0" layoutY="150.0" prefWidth="150.0" stylesheets="@../Styles.css" />
-                  <TextField id="bevel-grey" fx:id="newVendorField" layoutX="1.0" layoutY="288.0" stylesheets="@../Styles.css" />
-                  <Button id="bevel-grey" fx:id="submitBtn" defaultButton="true" layoutX="31.0" layoutY="566.0" mnemonicParsing="false" onAction="#onSubmitAction" stylesheets="@../Styles.css" text="Submit" />
-                  <Button id="bevel-grey" fx:id="resetBtn" layoutX="95.0" layoutY="566.0" mnemonicParsing="false" onAction="#onResetAction" stylesheets="@../Styles.css" text="Reset" />
-                  <Label layoutX="2.0" stylesheets="@../Styles.css" text="Amount:" />
-                  <Label layoutX="2.0" layoutY="133.0" stylesheets="@../Styles.css" text="Select Existing Vendor:" />
-                  <Label layoutX="62.0" layoutY="237.0" stylesheets="@../Styles.css" text="OR" />
-                  <Label layoutX="2.0" layoutY="268.0" stylesheets="@../Styles.css" text="Enter New Vendor:" />
-                  <Label layoutX="2.0" layoutY="320.0" stylesheets="@../Styles.css" text="Select New Vendor Category:" />
-                  <Label layoutX="2.0" layoutY="77.0" stylesheets="@../Styles.css" text="Transaction Date:" />
-                  <Label fx:id="statusMessage" layoutX="1.0" layoutY="524.0" prefHeight="38.0" prefWidth="168.0" stylesheets="@../Styles.css" wrapText="true" />
-                  <ChoiceBox id="bevel-grey" fx:id="categoryList" layoutX="1.0" layoutY="341.0" prefWidth="150.0" stylesheets="@../Styles.css" />
-                  <Label layoutY="385.0" stylesheets="@../Styles.css" text="Transaction Method (Optional)" />
-                  <ChoiceBox id="bevel-grey" fx:id="methodList" layoutY="405.0" prefWidth="150.0" stylesheets="@../Styles.css" />
-                  <Separator layoutX="157.0" layoutY="264.0" orientation="VERTICAL" prefHeight="108.0" prefWidth="6.0" stylesheets="@../Styles.css" />
-                  <Separator layoutX="-5.0" layoutY="263.0" prefHeight="4.0" prefWidth="163.0" stylesheets="@../Styles.css" />
-                  <Separator layoutX="-4.0" layoutY="370.0" prefHeight="4.0" prefWidth="163.0" stylesheets="@../Styles.css" />
-                  <TextArea id="bevel-grey" fx:id="commentArea" layoutY="455.0" prefHeight="62.0" prefWidth="162.0" stylesheets="@../Styles.css" wrapText="true" />
-                  <Label layoutY="437.0" stylesheets="@../Styles.css" text="Comments:" />
-                  <Label layoutY="184.0" stylesheets="@../Styles.css" text="Existing Vendor Category:" />
-                  <TextField id="bevel-grey" fx:id="vendorCategoryField" editable="false" layoutX="1.0" layoutY="201.0" stylesheets="@../Styles.css" />
+                  <TextField id="bevel-grey" fx:id="amountField" layoutX="1.0" layoutY="19.0" stylesheets="@Styles.css" />
+                  <CheckBox fx:id="incomeCheckBoxField" layoutX="1.0" layoutY="48.0" mnemonicParsing="false" stylesheets="@Styles.css" text="Income?" />
+                  <DatePicker id="bevel-grey" fx:id="transDateField" layoutY="94.0" stylesheets="@Styles.css" />
+                  <ChoiceBox id="bevel-grey" fx:id="existingVendorList" layoutX="1.0" layoutY="150.0" prefWidth="150.0" stylesheets="@Styles.css" />
+                  <TextField id="bevel-grey" fx:id="newVendorField" layoutX="1.0" layoutY="288.0" stylesheets="@Styles.css" />
+                  <Button id="bevel-grey" fx:id="submitBtn" defaultButton="true" layoutX="31.0" layoutY="566.0" mnemonicParsing="false" onAction="#onSubmitAction" stylesheets="@Styles.css" text="Submit" />
+                  <Button id="bevel-grey" fx:id="resetBtn" layoutX="95.0" layoutY="566.0" mnemonicParsing="false" onAction="#onResetAction" stylesheets="@Styles.css" text="Reset" />
+                  <Label layoutX="2.0" stylesheets="@Styles.css" text="Amount:" />
+                  <Label layoutX="2.0" layoutY="133.0" stylesheets="@Styles.css" text="Select Existing Vendor:" />
+                  <Label layoutX="62.0" layoutY="237.0" stylesheets="@Styles.css" text="OR" />
+                  <Label layoutX="2.0" layoutY="268.0" stylesheets="@Styles.css" text="Enter New Vendor:" />
+                  <Label layoutX="2.0" layoutY="320.0" stylesheets="@Styles.css" text="Select New Vendor Category:" />
+                  <Label layoutX="2.0" layoutY="77.0" stylesheets="@Styles.css" text="Transaction Date:" />
+                  <Label fx:id="statusMessage" layoutX="1.0" layoutY="524.0" prefHeight="38.0" prefWidth="168.0" stylesheets="@Styles.css" wrapText="true" />
+                  <ChoiceBox id="bevel-grey" fx:id="categoryList" layoutX="1.0" layoutY="341.0" prefWidth="150.0" stylesheets="@Styles.css" />
+                  <Label layoutY="385.0" stylesheets="@Styles.css" text="Transaction Method (Optional)" />
+                  <ChoiceBox id="bevel-grey" fx:id="methodList" layoutY="405.0" prefWidth="150.0" stylesheets="@Styles.css" />
+                  <Separator layoutX="157.0" layoutY="264.0" orientation="VERTICAL" prefHeight="108.0" prefWidth="6.0" stylesheets="@Styles.css" />
+                  <Separator layoutX="-5.0" layoutY="263.0" prefHeight="4.0" prefWidth="163.0" stylesheets="@Styles.css" />
+                  <Separator layoutX="-4.0" layoutY="370.0" prefHeight="4.0" prefWidth="163.0" stylesheets="@Styles.css" />
+                  <TextArea id="bevel-grey" fx:id="commentArea" layoutY="455.0" prefHeight="62.0" prefWidth="162.0" stylesheets="@Styles.css" wrapText="true" />
+                  <Label layoutY="437.0" stylesheets="@Styles.css" text="Comments:" />
+                  <Label layoutY="184.0" stylesheets="@Styles.css" text="Existing Vendor Category:" />
+                  <TextField id="bevel-grey" fx:id="vendorCategoryField" editable="false" layoutX="1.0" layoutY="201.0" stylesheets="@Styles.css" />
                </children>
             </Pane>
-            <Separator layoutY="138.0" prefWidth="200.0" stylesheets="@../Styles.css" />
-            <Label layoutX="13.0" layoutY="148.0" stylesheets="@../Styles.css" text="Enter Transaction">
+            <Separator layoutY="138.0" prefWidth="200.0" stylesheets="@Styles.css" />
+            <Label layoutX="13.0" layoutY="148.0" stylesheets="@Styles.css" text="Enter Transaction">
                <font>
                   <Font name="System Bold" size="18.0" />
                </font>
             </Label>
-            <Label layoutX="13.0" layoutY="6.0" stylesheets="@../Styles.css" text="Select Budget">
+            <Label layoutX="13.0" layoutY="6.0" stylesheets="@Styles.css" text="Select Budget">
                <font>
                   <Font name="System Bold" size="18.0" />
                </font>
             </Label>
-            <Label layoutX="14.0" layoutY="97.0" stylesheets="@../Styles.css" text="Starting Balance:" />
-            <Label layoutX="14.0" layoutY="114.0" stylesheets="@../Styles.css" text="Current Balance:" />
-            <Label fx:id="startingBalanceLabel" layoutX="109.0" layoutY="97.0" stylesheets="@../Styles.css" text="\$0.00" />
-            <Label fx:id="currentBalanceLabel" layoutX="109.0" layoutY="114.0" stylesheets="@../Styles.css" text="\$0.00" />
-            <Separator layoutX="7.0" layoutY="441.0" orientation="VERTICAL" prefHeight="108.0" prefWidth="6.0" stylesheets="@../Styles.css" />
-            <CheckBox fx:id="currentBudgetCheckBox" layoutX="13.0" layoutY="70.0" mnemonicParsing="false" onAction="#onBudgetCurrentAction" stylesheets="@../Styles.css" text="Set as Current Budget" />
-            <Button id="bevel-grey" fx:id="editBudgetBtn" layoutX="167.0" layoutY="38.0" mnemonicParsing="false" onAction="#onEditBudgetBtnAction" stylesheets="@../Styles.css" text="Edit" />
-            <Button id="bevel-grey" fx:id="editCategoryBtn" layoutX="166.0" layoutY="379.0" mnemonicParsing="false" onAction="#onEditCategoryBtnAction" stylesheets="@../Styles.css" text="Edit" />
+            <Label layoutX="14.0" layoutY="97.0" stylesheets="@Styles.css" text="Starting Balance:" />
+            <Label layoutX="14.0" layoutY="114.0" stylesheets="@Styles.css" text="Current Balance:" />
+            <Label fx:id="startingBalanceLabel" layoutX="109.0" layoutY="97.0" stylesheets="@Styles.css" text="\$0.00" />
+            <Label fx:id="currentBalanceLabel" layoutX="109.0" layoutY="114.0" stylesheets="@Styles.css" text="\$0.00" />
+            <Separator layoutX="7.0" layoutY="441.0" orientation="VERTICAL" prefHeight="108.0" prefWidth="6.0" stylesheets="@Styles.css" />
+            <CheckBox fx:id="currentBudgetCheckBox" layoutX="13.0" layoutY="70.0" mnemonicParsing="false" onAction="#onBudgetCurrentAction" stylesheets="@Styles.css" text="Set as Current Budget" />
+            <Button id="bevel-grey" fx:id="editBudgetBtn" layoutX="167.0" layoutY="38.0" mnemonicParsing="false" onAction="#onEditBudgetBtnAction" stylesheets="@Styles.css" text="Edit" />
+            <Button id="bevel-grey" fx:id="editCategoryBtn" layoutX="166.0" layoutY="379.0" mnemonicParsing="false" onAction="#onEditCategoryBtnAction" stylesheets="@Styles.css" text="Edit" />
          </children>
       </AnchorPane>
    </left>
    <top>
-      <MenuBar fx:id="menuBar" stylesheets="@../Styles.css" BorderPane.alignment="CENTER">
+      <MenuBar fx:id="menuBar" stylesheets="@Styles.css" BorderPane.alignment="CENTER">
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
@@ -106,10 +106,10 @@
       </MenuBar>
    </top>
    <center>
-      <TabPane id="bevel-grey" fx:id="categoryTabPane" prefHeight="200.0" prefWidth="716.0" stylesheets="@../Styles.css" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER" />
+      <TabPane id="bevel-grey" fx:id="categoryTabPane" prefHeight="200.0" prefWidth="716.0" stylesheets="@Styles.css" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER" />
    </center>
    <right>
-      <TableView fx:id="categoryBudgetTable" prefHeight="635.0" prefWidth="297.0" style="-fx-background-color: #cce6e5;" stylesheets="@../Styles.css" BorderPane.alignment="CENTER">
+      <TableView fx:id="categoryBudgetTable" prefHeight="635.0" prefWidth="297.0" style="-fx-background-color: #cce6e5;" stylesheets="@Styles.css" BorderPane.alignment="CENTER">
          <columns>
             <TableColumn fx:id="categoryIdColumn" editable="false" prefWidth="75.0" text="Category ID" visible="false" />
             <TableColumn fx:id="categoryColumn" prefWidth="75.0" text="Category Name" />

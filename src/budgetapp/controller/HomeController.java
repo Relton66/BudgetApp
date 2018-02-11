@@ -15,7 +15,6 @@ import budgetapp.model.TransactionTableEntry;
 import budgetapp.util.CommonUtil;
 import budgetapp.util.Constants;
 import budgetapp.util.StringUtil;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Date;
@@ -57,7 +56,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import org.slf4j.LoggerFactory;
@@ -830,10 +828,8 @@ public class HomeController implements Initializable {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(Main.class.getResource("view/search.fxml"));
         BorderPane border = (BorderPane) loader.load();
-        //SearchController sController = loader.getController();       
         Scene scene = new Scene(border);
         stage.setScene(scene);
-        stage.setAlwaysOnTop(true);
         stage.show();
     }
     

@@ -8,6 +8,8 @@ import budgetapp.model.Category;
 import budgetapp.model.Method;
 import budgetapp.model.SearchTableEntry;
 import budgetapp.model.Vendor;
+import budgetapp.util.FileUtil;
+import java.io.File;
 import java.net.URL;
 import java.sql.Date;
 import java.util.ArrayList;
@@ -19,6 +21,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
@@ -31,6 +34,8 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import org.slf4j.LoggerFactory;
 
@@ -254,6 +259,35 @@ public class SearchController implements Initializable {
         categoryList.getSelectionModel().clearSelection();
         methodList.getSelectionModel().clearSelection();
         vendorList.getSelectionModel().clearSelection();
+    }
+    
+    /**
+     * This method handles the clear table button action.
+     */
+    public void onClearTableBtnAction() {
+        searchTable.getItems().clear();
+    }
+    
+    /**
+     * This method handles the export results button action.
+     */
+    public void onExportBtnAction() {
+        if(searchTable.getItems().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("There is no data to export.");
+            alert.showAndWait();
+        } else {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Export Search Results");
+            ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Excel Files", "*.xls");
+            fileChooser.getExtensionFilters().add(extFilter);
+            File file = fileChooser.showSaveDialog((Stage) searchBorderPane.getScene().getWindow());
+            if (file != null) {
+                FileUtil.exportSearchToExcel(file, searchTable.getItems());
+            }
+        }
     }
     
     /**
