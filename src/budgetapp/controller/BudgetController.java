@@ -159,7 +159,9 @@ public class BudgetController implements Initializable {
             // Only add if they aren't in the table already
             for (Category category : categoryList) {
                 if(!categoryAlreadyExists(category.getCategoryName())) {
-                    addToCategoryTable(category.getCategoryName(), "0.00");
+                    String catStartBalance = CategoryBudgetDAO.getCategoryStartBalance(
+                            budgetId, category.getCategoryId());
+                    addToCategoryTable(category.getCategoryName(), catStartBalance);
                 }
             }            
         }

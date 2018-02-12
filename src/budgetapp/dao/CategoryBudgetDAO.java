@@ -216,4 +216,31 @@ public class CategoryBudgetDAO {
             LOG.error("deleteCategoryBudget has failed", e);           
         }        
     }
+    
+    /**
+     * This method gets the starting balance for a category for a budget.
+     * 
+     * @param budgetId - the budget ID
+     * @param categoryId - the category ID
+     * @return the start balance
+     */
+    public static String getCategoryStartBalance(int budgetId, int categoryId) {
+        LOG.info("Attempting to get category start balance for budget ID {} and category ID {}",
+                budgetId, categoryId);
+        String query = "SELECT start_balance FROM category_budget WHERE budget_id = ? AND category_id = ?";
+        String startBalance = "0.00";
+        List<Object> parameters = new ArrayList<>();
+        parameters.add(budgetId);
+        parameters.add(categoryId);
+        try {
+           ResultSet results = DBUtil.dbExecuteSelectQuery(query, parameters);
+           if(results.next()) {
+               startBalance = results.getString("START_BALANCE");               
+           }
+        } catch (SQLException | ClassNotFoundException e) {
+            LOG.error("getCategoryStartBalance has failed", e);           
+        }
+        LOG.info("Category budget start balance retrieved successfully!");
+        return startBalance;
+    }
 }
