@@ -98,6 +98,8 @@ public class BudgetController implements Initializable {
     private HomeController homeController;
     /** The originalBudgetName used for edit budget. */
     private String originalBudgetName;
+    /** The original budget starting balance. */
+    private Double originalBudgetStartBalance;
     /** The list of table entries for edit. */
     private final List<CategoryBudgetTableEntry> originalCategoryList = new ArrayList();
     /** The budget ID that is being edited. */
@@ -184,7 +186,7 @@ public class BudgetController implements Initializable {
      * @param t - the CellEditEvent instance
      */
     public void onBudgetAmountEditCommit(CellEditEvent<CategoryBudgetTableEntry, String> t) {        
-        String newValue = t.getNewValue();
+        String newValue = t.getNewValue().replaceFirst("\\$", "");
         if(StringUtil.isValidDollarAmount(newValue)) {
             newValue = Double.toString(StringUtil.convertFromDollarFormat(newValue));
             newValue = StringUtil.convertToDollarFormat(newValue);
@@ -291,18 +293,18 @@ public class BudgetController implements Initializable {
         budget.setStartBalance(StringUtil.convertFromDollarFormat(startBalance.getText()));
         if(isEdit) {
             budget.setBudgetId(editedBudgetId);
-            BudgetDAO.updateBudget(budget);
+            BudgetDAO.updateBudget(budget, originalBudgetStartBalance);
             saveNewCategories();
             updateCategoryBudgets(editedBudgetId);
             homeController.loadExistingBudgets(true);            
             homeController.populateCategoryBudgetTable(editedBudgetId);
-            setEditVariables(editedBudgetId, budget.getBudgetName());            
+            setEditVariables(editedBudgetId, budget.getBudgetName(), budget.getStartBalance());            
         } else {        
             int budgetId = BudgetDAO.saveNewBudget(budget);           
             saveNewCategories();
             saveCategoryBudgets(budgetId);
             homeController.refreshBudgetList(budgetId, budget);
-            setEditVariables(budgetId, budget.getBudgetName());
+            setEditVariables(budgetId, budget.getBudgetName(), budget.getStartBalance());
             Stage stage = (Stage) budgetBorderPane.getScene().getWindow();
             stage.setTitle("Edit Budget");
         }
@@ -571,7 +573,7 @@ public class BudgetController implements Initializable {
         startBalance.setText(String.format("%.2f", budget.getStartBalance()));
         startDate.setValue(budget.getStartDate().toLocalDate());
         endDate.setValue(budget.getEndDate().toLocalDate());
-        setEditVariables(budgetId, budget.getBudgetName());
+        setEditVariables(budgetId, budget.getBudgetName(), budget.getStartBalance());
         populateCategoryBudgetTable();        
     }
     
@@ -581,8 +583,9 @@ public class BudgetController implements Initializable {
      * 
      * @param budgetId - the budget ID
      * @param budgetName - the budget name
+     * @param budgetStartBalance - the budget starting balance
      */
-    private void setEditVariables(int budgetId, String budgetName) {
+    private void setEditVariables(int budgetId, String budgetName, Double budgetStartBalance) {
         isEdit = true;
         originalCategoryList.clear();
         categoryTableList = CategoryBudgetDAO.getCategoryBudgetsForTable(budgetId);
@@ -595,5 +598,6 @@ public class BudgetController implements Initializable {
         }
         editedBudgetId = budgetId;
         originalBudgetName = budgetName;
+        originalBudgetStartBalance = budgetStartBalance;
     }
 }

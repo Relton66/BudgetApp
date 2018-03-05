@@ -35,6 +35,7 @@ public class CommonUtil {
      * 
      * @param amount - the amount
      * @param isIncome - true if transaction is income
+     * @param isRecurring - true if transaction is recurring
      * @param transDate - the transaction date
      * @param budgetId - the budget ID
      * @param methodList - the method list
@@ -44,11 +45,13 @@ public class CommonUtil {
      * @param comments - the comments
      * @return the transaction model with all data set
      */   
-    public static Transaction generateTransactionModel(double amount, boolean isIncome, Date transDate, int budgetId,
-            ChoiceBox methodList, String vendorName, String newVendorName, String categoryName, String comments) {
+    public static Transaction generateTransactionModel(double amount, boolean isIncome, boolean isRecurring, 
+            Date transDate, int budgetId, ChoiceBox methodList, String vendorName, String newVendorName, 
+            String categoryName, String comments) {
         Transaction transaction = new Transaction();
         transaction.setAmount(amount);
         transaction.setIncome(isIncome);
+        transaction.setRecurring(isRecurring);
         transaction.setTransDate(transDate);
         transaction.setBudgetId(budgetId);
         transaction.setComments(comments);

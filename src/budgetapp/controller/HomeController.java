@@ -77,6 +77,9 @@ public class HomeController implements Initializable {
     /** The income check box. */
     @FXML
     private CheckBox incomeCheckBoxField;
+    /** The recurring check box. */
+    @FXML
+    private CheckBox recurringCheckBoxField;
     /** The date field. */
     @FXML
     private DatePicker transDateField;
@@ -376,9 +379,10 @@ public class HomeController implements Initializable {
      */   
     public void saveNewTransaction() {
         Transaction transaction = CommonUtil.generateTransactionModel(StringUtil.convertFromDollarFormat(
-            amountField.getText()), incomeCheckBoxField.isSelected(), Date.valueOf(transDateField.getValue()),
-            selectedBudgetId, methodList, existingVendorList.getSelectionModel().getSelectedItem().toString(),
-            newVendorField.getText(), categoryList.getSelectionModel().getSelectedItem().toString(), commentArea.getText());       
+            amountField.getText()), incomeCheckBoxField.isSelected(), recurringCheckBoxField.isSelected(), 
+            Date.valueOf(transDateField.getValue()), selectedBudgetId, methodList, existingVendorList.getSelectionModel()
+            .getSelectedItem().toString(), newVendorField.getText(), categoryList.getSelectionModel().getSelectedItem()
+            .toString(), commentArea.getText());       
         TransactionDAO.saveTransaction(transaction);        
         updateBalances(transaction);        
         displayMessage("Transaction successfully saved!", true);
@@ -434,6 +438,7 @@ public class HomeController implements Initializable {
     private void resetFields(boolean resetMessage) {
         amountField.setText("");
         incomeCheckBoxField.setSelected(false);
+        recurringCheckBoxField.setSelected(false);
         transDateField.setValue(LocalDate.now());
         loadExistingVendors();
         vendorCategoryField.setText("");

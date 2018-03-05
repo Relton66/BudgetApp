@@ -32,6 +32,8 @@ public class Transaction {
     private final IntegerProperty budgetId;
     /** The comments. */
     private final StringProperty comments;
+    /** The recurring flag. */
+    private final BooleanProperty recurring;
     
     /**
      * The constructor.
@@ -45,6 +47,7 @@ public class Transaction {
         this.budgetId = new SimpleIntegerProperty();
         this.methodId = new SimpleIntegerProperty();
         this.comments = new SimpleStringProperty();
+        this.recurring = new SimpleBooleanProperty();
     }
 
     /**
@@ -261,5 +264,23 @@ public class Transaction {
      */
     public StringProperty commentsProperty() {
         return comments;
+    }
+    
+    /**
+     * Gets recurring value.
+     * 
+     * @return recurring value
+     */
+    public final boolean getRecurring() {
+        return recurring.get();
+    }
+
+    /**
+     * Sets recurring value.
+     * 
+     * @param recurring - the recurring value to set.
+     */
+    public final void setRecurring(boolean recurring) {
+        this.recurring.set(recurring);
     }
 }

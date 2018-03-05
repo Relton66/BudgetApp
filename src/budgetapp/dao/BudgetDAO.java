@@ -57,15 +57,23 @@ public class BudgetDAO {
      * This method updates an existing budget.
      * 
      * @param budget - the budget model  
+     * @param originalStartBalance - the original budget start balance
      */
-    public static void updateBudget(Budget budget) {
+    public static void updateBudget(Budget budget, Double originalStartBalance) {
         LOG.info("Attempting to update budget ID {}", budget.getBudgetId());
-        String query = "UPDATE budget set budget_name = ?, start_date = ?, end_date = ?, start_balance = ? WHERE budget_id = ?";
+        Double amountChanged = Math.abs(budget.getStartBalance() - originalStartBalance);
+        boolean needToIncrease = originalStartBalance < budget.getStartBalance();
+        String query = "UPDATE budget SET budget_name = ?, start_date = ?, end_date = ?, start_balance = ?, "
+                + "current_balance = CASE WHEN ? = 'Y' THEN current_balance + ? ELSE current_balance - ? END "
+                + "WHERE budget_id = ?";
         List<Object> parameters = new ArrayList<>();
         parameters.add(budget.getBudgetName());
         parameters.add(budget.getStartDate());
         parameters.add(budget.getEndDate());
         parameters.add(budget.getStartBalance());
+        parameters.add(needToIncrease ? "Y" : "N");
+        parameters.add(amountChanged);
+        parameters.add(amountChanged);
         parameters.add(budget.getBudgetId());
         try {
             DBUtil.dbExecuteUpdate(query, parameters, "");

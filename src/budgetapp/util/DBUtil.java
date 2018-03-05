@@ -245,7 +245,7 @@ public class DBUtil {
             // Create transactions table
             executeQuery("CREATE TABLE transactions (transaction_id INT NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY "
                 + "(START WITH 1, INCREMENT BY 1), amount DECIMAL(15,2), "
-                + "income BOOLEAN, trans_date DATE, method_id INT, vendor_id INT, budget_id INT, comments VARCHAR(100), "
+                + "income BOOLEAN, recurring BOOLEAN, trans_date DATE, method_id INT, vendor_id INT, budget_id INT, comments VARCHAR(100), "
                 + "CONSTRAINT fk_transaction_vendor_id FOREIGN KEY (vendor_id) REFERENCES vendor(vendor_id), CONSTRAINT "
                 + "fk_transaction_budget_id FOREIGN KEY (budget_id) REFERENCES budget(budget_id), CONSTRAINT "
                 + "fk_transaction_method_id FOREIGN KEY (method_id) REFERENCES method(method_id))");            

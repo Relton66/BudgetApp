@@ -36,24 +36,25 @@ public class TransactionDAO {
         String query;
         if(Main.USE_DERBY) {
             if(noMethodId) {
-                query = "INSERT INTO transactions (amount, income, trans_date, vendor_id, comments, "
-                    + "budget_id) values (?, ?, ?, ?, ?, ?)";    
+                query = "INSERT INTO transactions (amount, income, recurring, trans_date, vendor_id, comments, "
+                    + "budget_id) values (?, ?, ?, ?, ?, ?, ?)";    
             } else {
-                query = "INSERT INTO transactions (amount, income, trans_date, vendor_id, comments, "
-                    + "budget_id, method_id) values (?, ?, ?, ?, ?, ?, ?)";    
+                query = "INSERT INTO transactions (amount, income, recurring, trans_date, vendor_id, comments, "
+                    + "budget_id, method_id) values (?, ?, ?, ?, ?, ?, ?, ?)";    
             }
         } else {
             if(noMethodId) {
-                query = "INSERT INTO transactions (transaction_id, amount, income, trans_date, vendor_id, "
-                    + "comments, budget_id) values (transaction_seq.nextval, ?, ?, ?, ?, ?, ?)";    
+                query = "INSERT INTO transactions (transaction_id, amount, income, recurring, trans_date, vendor_id, "
+                    + "comments, budget_id) values (transaction_seq.nextval, ?, ?, ?, ?, ?, ?, ?)";    
             } else {
-                query = "INSERT INTO transactions (transaction_id, amount, income, trans_date, vendor_id, "
-                    + "comments, budget_id, method_id) values (transaction_seq.nextval, ?, ?, ?, ?, ?, ?, ?)";    
+                query = "INSERT INTO transactions (transaction_id, amount, income, recurring, trans_date, vendor_id, "
+                    + "comments, budget_id, method_id) values (transaction_seq.nextval, ?, ?, ?, ?, ?, ?, ?, ?)";    
             }
         }
         List<Object> parameters = new ArrayList<>();
         parameters.add(transaction.getAmount());
         parameters.add(transaction.getIncome());
+        parameters.add(transaction.getRecurring());
         parameters.add(transaction.getTransDate());             
         parameters.add(transaction.getVendorId());
         parameters.add(transaction.getComments());
@@ -133,6 +134,7 @@ public class TransactionDAO {
                 transaction.setTransDate(results.getDate("TRANS_DATE"));
                 transaction.setAmount(results.getDouble("AMOUNT"));
                 transaction.setIncome(results.getBoolean("INCOME"));
+                transaction.setRecurring(results.getBoolean("RECURRING"));
                 transaction.setVendorId(results.getInt("VENDOR_ID"));
                 transaction.setMethodId(results.getInt("METHOD_ID"));
                 transaction.setBudgetId(results.getInt("BUDGET_ID"));
@@ -170,7 +172,7 @@ public class TransactionDAO {
     public static void updateTransaction(Transaction transaction) {
         LOG.info("Attempting to update transaction ID {}", transaction.getTransactionId());
         boolean methodExists = transaction.getMethodId() != 0;
-        String query = "UPDATE transactions SET amount = ?, income = ?, trans_date = ?, vendor_id = ?, comments = ?";
+        String query = "UPDATE transactions SET amount = ?, income = ?, recurring = ?, trans_date = ?, vendor_id = ?, comments = ?";
         if(methodExists) {
             query += ", method_id = ?";    
         }
@@ -178,6 +180,7 @@ public class TransactionDAO {
         List<Object> parameters = new ArrayList<>();
         parameters.add(transaction.getAmount());
         parameters.add(transaction.getIncome());
+        parameters.add(transaction.getRecurring());
         parameters.add(transaction.getTransDate());             
         parameters.add(transaction.getVendorId());
         parameters.add(transaction.getComments());

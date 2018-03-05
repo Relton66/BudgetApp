@@ -61,6 +61,9 @@ public class EditTransactionController implements Initializable {
     /** The income check box. */
     @FXML
     private CheckBox incomeCheckBoxField;
+    /** The recurring check box. */
+    @FXML
+    private CheckBox recurringCheckBoxField;
     /** The category list. */
     @FXML
     private ChoiceBox categoryList;
@@ -221,8 +224,8 @@ public class EditTransactionController implements Initializable {
      */
     private void saveTransactionData(double newAmount, String categoryName) {
         Transaction transaction = CommonUtil.generateTransactionModel(newAmount,
-            incomeCheckBoxField.isSelected(), Date.valueOf(transDateField.getValue()), budgetId,
-            methodList, existingVendorList.getSelectionModel().getSelectedItem().toString(),
+            incomeCheckBoxField.isSelected(), recurringCheckBoxField.isSelected(), Date.valueOf(transDateField.getValue()),
+            budgetId, methodList, existingVendorList.getSelectionModel().getSelectedItem().toString(),
             newVendorField.getText(), categoryName, commentArea.getText());
         transaction.setTransactionId(transactionId);
         TransactionDAO.updateTransaction(transaction);
@@ -277,6 +280,7 @@ public class EditTransactionController implements Initializable {
         amountField.setText(String.format("%.2f", transaction.getAmount()));
         originalAmount = transaction.getAmount();
         incomeCheckBoxField.setSelected(transaction.getIncome());
+        recurringCheckBoxField.setSelected(transaction.getRecurring());
         originalIncomeValue = transaction.getIncome();
         loadVendorList(transactionEntry.getVendorName());
         originalCategoryName = transactionEntry.getCategoryName();
