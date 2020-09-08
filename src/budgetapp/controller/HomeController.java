@@ -394,7 +394,7 @@ public class HomeController implements Initializable {
      * 
      * @param transaction - the transaction entity     
      */
-    private void updateBalances(Transaction transaction) {        
+    public void updateBalances(Transaction transaction) {        
         BudgetDAO.updateBudgetBalance(selectedBudgetId, transaction.getIncome(),
                 transaction.getAmount());
         // Update category budget balance

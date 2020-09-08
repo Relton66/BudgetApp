@@ -3,9 +3,12 @@ package budgetapp.controller;
 import budgetapp.dao.BudgetDAO;
 import budgetapp.dao.CategoryBudgetDAO;
 import budgetapp.dao.CategoryDAO;
+import budgetapp.dao.TransactionDAO;
+import budgetapp.dao.VendorDAO;
 import budgetapp.model.Budget;
 import budgetapp.model.Category;
 import budgetapp.model.CategoryBudgetTableEntry;
+import budgetapp.model.Transaction;
 import budgetapp.util.CommonUtil;
 import budgetapp.util.StringUtil;
 import java.net.URL;
@@ -23,6 +26,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.DatePicker;
@@ -87,6 +91,9 @@ public class BudgetController implements Initializable {
     /** The previous budget list. */
     @FXML
     private ChoiceBox previousBudgetList;
+    /** The create recurring transactions check box. */
+    @FXML
+    private CheckBox createRecurringChkBox;
     /** The budget total field. */
     @FXML
     private TextField budgetTotalField;
@@ -106,6 +113,8 @@ public class BudgetController implements Initializable {
     private int editedBudgetId = 0;
     /** The edit budget flag. */
     private boolean isEdit = false;
+    /** The loaded budget ID. */
+    private int loadedBudgetId;
     /** The logger. */
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(BudgetController.class);
         
@@ -154,15 +163,15 @@ public class BudgetController implements Initializable {
         if(previousBudgetList.getSelectionModel().getSelectedItem() == null) {
             CommonUtil.displayMessage(categoryStatusMessage, "No budget was selected.", false);
         } else {
-            int budgetId = BudgetDAO.findBudgetId(previousBudgetList.getSelectionModel()
+            loadedBudgetId = BudgetDAO.findBudgetId(previousBudgetList.getSelectionModel()
                     .getSelectedItem().toString());
             // Get all categories for budget ID
-            List<Category> categoryList = CategoryDAO.getCategoriesByBudgetId(budgetId);
+            List<Category> categoryList = CategoryDAO.getCategoriesByBudgetId(loadedBudgetId);
             // Only add if they aren't in the table already
             for (Category category : categoryList) {
                 if(!categoryAlreadyExists(category.getCategoryName())) {
                     String catStartBalance = CategoryBudgetDAO.getCategoryStartBalance(
-                            budgetId, category.getCategoryId());
+                            loadedBudgetId, category.getCategoryId());
                     addToCategoryTable(category.getCategoryName(), catStartBalance);
                 }
             }            
@@ -303,12 +312,40 @@ public class BudgetController implements Initializable {
             int budgetId = BudgetDAO.saveNewBudget(budget);           
             saveNewCategories();
             saveCategoryBudgets(budgetId);
-            homeController.refreshBudgetList(budgetId, budget);
+            if(createRecurringChkBox.isSelected()) {
+                createRecurringTransactions(budgetId, loadedBudgetId);
+                createRecurringChkBox.setDisable(true);
+            } else {
+                homeController.refreshBudgetList(budgetId, budget);
+            }
             setEditVariables(budgetId, budget.getBudgetName(), budget.getStartBalance());
             Stage stage = (Stage) budgetBorderPane.getScene().getWindow();
             stage.setTitle("Edit Budget");
         }
         populateCategoryBudgetTable();
+    }
+    
+    /**
+     * This method creates the recurring transactions to insert into the
+     * new budget.
+     * 
+     * @param budgetId - the new budget ID
+     * @param loadedBudgetId - the budget ID to get recurring transactions from
+     */
+    private void createRecurringTransactions(int budgetId, int loadedBudgetId) {
+        List<Transaction> transList = TransactionDAO.getRecurringTransactions(loadedBudgetId);
+        for(Transaction transaction : transList) {
+            transaction.setBudgetId(budgetId);
+            transaction.setTransDate(Date.valueOf(transaction.getTransDate().toLocalDate().plusMonths(1)));
+            TransactionDAO.saveTransaction(transaction);        
+            BudgetDAO.updateBudgetBalance(budgetId, transaction.getIncome(),
+                transaction.getAmount());
+            // Update category budget balance
+            int categoryId = VendorDAO.findCategoryByVendorId(transaction.getVendorId()).getCategoryId();
+            CategoryBudgetDAO.updateCategoryBalance(budgetId, categoryId, transaction.getIncome(),
+                transaction.getAmount());
+        }
+        homeController.loadExistingBudgets(true); 
     }
     
     /**
@@ -448,6 +485,8 @@ public class BudgetController implements Initializable {
             CommonUtil.displayMessage(budgetStatusMessage, "There's an invalid entry in the category table.", false);
         } else if(exceededBudgetBalance()) {
             CommonUtil.displayMessage(budgetStatusMessage, "Category budget amount(s) exceed starting balance.", false);
+        } else if(createRecurringChkBox.isSelected() && previousBudgetList.getSelectionModel().getSelectedItem() == null) {
+            CommonUtil.displayMessage(categoryStatusMessage, "No budget selected for Create Recurring Transactions.", false);
         } else {
             isValid = true;
         }        

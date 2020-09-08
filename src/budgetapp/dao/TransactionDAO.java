@@ -197,6 +197,44 @@ public class TransactionDAO {
     }
     
     /**
+     * This method gets all the recurring transactions for a budget.
+     * 
+     * @param budgetId - the budget ID
+     * @return list of recurring transactions
+     */
+    public static List<Transaction> getRecurringTransactions(int budgetId) {
+        LOG.info("Attempting to retrieve all recurring transactions for budget ID {}", budgetId);
+        List<Transaction> transactionList = new ArrayList<>();
+        List<Object> parameters = new ArrayList<>();
+        String query = "SELECT * FROM transactions WHERE budget_id = ? AND recurring = ?";
+        parameters.add(budgetId);
+        parameters.add(Main.USE_DERBY ? true : "1");
+        try {
+            ResultSet results = DBUtil.dbExecuteSelectQuery(query, parameters);
+            while(results.next()) {
+                Transaction transaction = new Transaction();
+                transaction.setTransactionId(results.getInt("TRANSACTION_ID"));
+                transaction.setTransDate(results.getDate("TRANS_DATE"));
+                transaction.setAmount(results.getDouble("AMOUNT"));
+                transaction.setIncome(results.getBoolean("INCOME"));
+                transaction.setRecurring(results.getBoolean("RECURRING"));
+                transaction.setVendorId(results.getInt("VENDOR_ID"));
+                transaction.setMethodId(results.getInt("METHOD_ID"));
+                transaction.setBudgetId(results.getInt("BUDGET_ID"));
+                String comments = results.getString("COMMENTS");
+                if(comments == null) {
+                    comments = "";
+                }
+                transaction.setComments(comments);
+                transactionList.add(transaction);
+            } 
+        } catch (SQLException | ClassNotFoundException e) {
+            LOG.error("getRecurringTransactions has failed", e);            
+        }
+        return transactionList;
+    }
+    
+    /**
      * This method searches for transactions matching all the input parameters.
      * 
      * @param startDate - the start date
